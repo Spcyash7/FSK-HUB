@@ -47,6 +47,20 @@
         .admin-only {
             display: none; /* Initially hide admin-only sections */
         }
+        .menu {
+            cursor: pointer;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .dropdown-menu {
+            background-color: #343a40; /* Dark background for dropdown */
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -56,7 +70,8 @@
     </div>
 
     <div class="container">
-        <div>
+        <button id="menuBtn" class="menu">☰ Menu</button>
+        <div id="menu" class="hidden">
             <button id="membersBtn" class="btn btn-custom">Current Members 💚</button>
             <button id="addMemberBtn" class="btn btn-custom">Add Member</button>
             <button id="deleteMemberBtn" class="btn btn-custom">Delete Member</button>
@@ -98,6 +113,16 @@
         const membersList = document.getElementById("membersList");
         const totalMembers = document.getElementById("totalMembers");
         const deleteMembersList = document.getElementById("deleteMembersList");
+
+        // Show or hide the menu
+        document.getElementById("menuBtn").addEventListener("click", function() {
+            const menu = document.getElementById("menu");
+            if (menu.classList.contains("hidden")) {
+                menu.classList.remove("hidden");
+            } else {
+                menu.classList.add("hidden");
+            }
+        });
 
         // Show Current Members
         document.getElementById("membersBtn").addEventListener("click", function() {
@@ -185,6 +210,7 @@
             document.getElementById("addMemberSection").classList.add("hidden");
             document.getElementById("deleteMemberSection").classList.add("hidden");
             document.getElementById("createAdminSection").classList.add("hidden");
+            document.getElementById("menu").classList.add("hidden");
         }
 
         // Create new admin
@@ -203,4 +229,5 @@
         updateMembersList();
     </script>
 </body>
-</html>
+                </html>
+                
