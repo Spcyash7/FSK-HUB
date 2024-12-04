@@ -12,6 +12,11 @@
             color: #f8f9fa; /* Light text */
             margin: 0;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
         }
         header {
             background-color: #343a40; /* Dark header */
@@ -22,38 +27,18 @@
             font-size: 3.6em; /* Heading size */
             margin: 0;
         }
-        .sidebar {
-            height: 100%;
-            width: 250px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: #343a40; /* Dark sidebar */
-            padding-top: 20px;
-            color: white;
-        }
-        .sidebar a {
-            padding: 15px;
-            text-decoration: none;
-            color: white;
-            display: block;
-            transition: background 0.3s;
-            font-size: 1.2em; /* Font size for sidebar */
-        }
-        .sidebar a:hover {
-            background-color: #495057; /* Darker on hover */
-        }
-        .content {
-            margin-left: 260px; /* Leave space for sidebar */
+        .form-container {
+            background-color: #343a40; /* Dark form background */
             padding: 20px;
-        }
-        .section {
-            display: none;
-            background-color: #343a40; /* Dark section */
             border-radius: 5px;
-            padding: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-            margin-top: 20px;
+        }
+        input[type="text"], input[type="password"] {
+            padding: 10px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            width: calc(100% - 22px);
+            margin-top: 10px;
         }
         button {
             background-color: #007bff; /* Primary button color */
@@ -66,25 +51,13 @@
             width: 100%; /* Full width button */
             font-size: 1em; /* Button text size */
         }
-        input[type="text"] {
-            padding: 10px;
-            border: 1px solid #007bff;
-            border-radius: 5px;
-            width: calc(100% - 22px);
-            margin-top: 10px;
-        }
-        .fa {
-            margin-right: 10px; /* Space for icon */
-        }
         .message {
             color: green; /* Success message color */
             margin-top: 10px;
             display: none; /* Initially hidden */
-            animation: fadeIn 1s; /* Animation for message */
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .hidden {
+            display: none; /* Class to hide elements */
         }
     </style>
 </head>
@@ -92,42 +65,75 @@
     <header>
         <h1>FSK HUB</h1>
     </header>
-    <div class="sidebar">
-        <a href="#" onclick="showSection('addMember')"><i class="fa fa-user-plus"></i> Add Members</a>
-        <a href="#" onclick="showSection('deleteMember')"><i class="fa fa-user-minus"></i> Delete Members</a>
-        <a href="#" onclick="showSection('totalMembers')"><i class="fa fa-users"></i> Total Members</a>
+
+    <div id="loginContainer" class="form-container">
+        <h2>Login Admin</h2>
+        <input type="text" id="adminId" placeholder="Enter Admin ID">
+        <input type="password" id="adminPassword" placeholder="Enter Password">
+        <button onclick="login()">Login</button>
+        <p id="loginMessage" class="message"></p>
     </div>
-    <div class="content">
-        <div id="addMember" class="section">
-            <h2>Add New Member</h2>
-            <input type="text" id="memberName" placeholder="Enter member name">
-            <button onclick="addMember()">Add Member</button>
-            <p id="addMessage" class="message"></p>
+
+    <div id="dashboardContainer" class="hidden">
+        <div class="sidebar">
+            <a href="#" onclick="showSection('addMember')"><i class="fa fa-user-plus"></i> Add Members</a>
+            <a href="#" onclick="showSection('deleteMember')"><i class="fa fa-user-minus"></i> Delete Members</a>
+            <a href="#" onclick="showSection('totalMembers')"><i class="fa fa-users"></i> Total Members</a>
+            <a href="#" onclick="showSection('createAdmin')"><i class="fa fa-user-cog"></i> Create Admin</a>
         </div>
-        <div id="deleteMember" class="section">
-            <h2>Delete Members</h2>
-            <ul id="memberList"></ul>
-            <button onclick="deleteMembers()">Delete Selected</button>
-        </div>
-        <div id="totalMembers" class="section">
-            <h2>Total Members</h2>
-            <ul id="totalMemberList"></ul>
-            <p id="totalCount">Total: 0 Members</p>
+        <div class="content">
+            <div id="addMember" class="section hidden">
+                <h2>Add New Member</h2>
+                <input type="text" id="memberName" placeholder="Enter member name">
+                <button onclick="addMember()">Add Member</button>
+                <p id="addMessage" class="message"></p>
+            </div>
+            <div id="deleteMember" class="section hidden">
+                <h2>Delete Members</h2>
+                <ul id="memberList"></ul>
+                <button onclick="deleteMembers()">Delete Selected</button>
+            </div>
+            <div id="totalMembers" class="section hidden">
+                <h2>Total Members</h2>
+                <ul id="totalMemberList"></ul>
+                <p id="totalCount">Total: 0 Members</p>
+            </div>
+            <div id="createAdmin" class="section hidden">
+                <h2>Create Admin</h2>
+                <input type="text" id="newUser" placeholder="New Username">
+                <input type="password" id="newPassword" placeholder="New Password">
+                <button onclick="generateAdmin()">Generate</button>
+                <p id="generateMessage" class="message"></p>
+            </div>
         </div>
     </div>
+
     <script>
         const members = []; // Array to store member details
-        const memberListElement = document.getElementById('memberList');
-        const totalCountElement = document.getElementById('totalCount');
-        const totalMemberListElement = document.getElementById('totalMemberList');
-        const addMessageElement = document.getElementById('addMessage');
+        const adminCredentials = { id: 'FSK_QUADRILL', password: 'Naruto8844' }; // Admin credentials
+        let loggedIn = false; // Flag to check if logged in
+
+        function login() {
+            const adminId = document.getElementById('adminId').value;
+            const adminPassword = document.getElementById('adminPassword').value;
+            if (adminId === adminCredentials.id && adminPassword === adminCredentials.password) {
+                loggedIn = true; // Set logged in to true
+                document.getElementById('loginContainer').classList.add('hidden'); // Hide login container
+                document.getElementById('dashboardContainer').classList.remove('hidden'); // Show dashboard
+                showSection('addMember'); // Show add member section by default
+                document.getElementById('loginMessage').style.display = 'none'; // Hide login message
+            } else {
+                document.getElementById('loginMessage').textContent = 'Invalid Admin ID or Password.';
+                document.getElementById('loginMessage').style.display = 'block'; // Show error message
+            }
+        }
 
         function showSection(sectionId) {
             const sections = document.querySelectorAll('.section');
-            sections.forEach(section => section.style.display = 'none');
-            document.getElementById(sectionId).style.display = 'block';
-            updateMemberList();
-            updateTotalCount();
+            sections.forEach(section => section.classList.add('hidden')); // Hide all sections
+            document.getElementById(sectionId).classList.remove('hidden'); // Show selected section
+            updateMemberList(); // Update member list whenever a section is shown
+            updateTotalCount(); // Update total count whenever a section is shown
         }
 
         function addMember() {
@@ -136,8 +142,8 @@
                 const joinDate = new Date().toLocaleDateString(); // Get current date
                 members.push({ name: memberName, date: joinDate }); // Add member with name and date
                 document.getElementById('memberName').value = '';
-                addMessageElement.textContent = `Member "${memberName}" added on ${joinDate}.`;
-                addMessageElement.style.display = 'block'; // Show the message
+                document.getElementById('addMessage').textContent = `Member "${memberName}" added on ${joinDate}.`;
+                document.getElementById('addMessage').style.display = 'block'; // Show the message
                 updateMemberList();
                 updateTotalCount();
             }
@@ -153,21 +159,31 @@
             updateTotalCount();
         }
 
+        function generateAdmin() {
+            const newUser = document.getElementById('newUser').value;
+            const newPassword = document.getElementById('newPassword').value;
+            if (newUser && newPassword) {
+                document.getElementById('generateMessage').textContent = `User "${newUser}" created with password "${newPassword}".`;
+                document.getElementById('generateMessage').style.display = 'block'; // Show success message
+                // You can store this generated user and password in a real application
+            }
+        }
+
         function updateMemberList() {
+            const memberListElement = document.getElementById('memberList');
             memberListElement.innerHTML = '';
-            totalMemberListElement.innerHTML = '';
             members.forEach((member, index) => {
                 memberListElement.innerHTML += `<li><input type="checkbox" data-index="${index}"> ${member.name}</li>`;
-                totalMemberListElement.innerHTML += `<li>${member.name} (Joined on: ${member.date})</li>`; // Show name and join date
             });
         }
 
         function updateTotalCount() {
+            const totalCountElement = document.getElementById('totalCount');
             totalCountElement.innerText = `Total: ${members.length} Members`;
         }
 
-        // Show the first section by default
-        showSection('addMember');
+        // Show login page by default
+        document.getElementById('loginContainer').classList.remove('hidden');
     </script>
 </body>
 </html>
