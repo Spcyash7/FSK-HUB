@@ -3,244 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FSK HUB Admin Dashboard</title>
+    <title>FSK HUB</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: Arial, sans-serif;
+            background-color: #121212; /* Dark background */
+            color: white;
             margin: 0;
             padding: 0;
-            background-image: url('your-background-image-url.jpg'); /* Change this to your image URL */
-            background-size: cover;
-            background-repeat: no-repeat;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
         }
-
-        #welcomeAnimation {
-            display: none;
-            font-size: 2.5em;
+        header {
+            background-color: #1f1f1f;
+            padding: 10px;
             text-align: center;
-            margin-top: 20%;
         }
-
-        .hidden {
-            display: none;
-        }
-
-        .section {
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            margin: 10px;
-            width: 80%; /* Make it responsive */
-            max-width: 400px; /* Limit max width for larger screens */
-            transition: all 0.3s;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        #menu {
-            display: none;
-            flex-direction: column;
-            position: absolute;
-            top: 70px;
-            left: 10px;
-            z-index: 10;
-        }
-
-        #menu.show {
-            display: flex;
-        }
-
-        #header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.9);
-            border-bottom: 1px solid white;
-        }
-
-        #menuToggle {
-            font-size: 1.5em;
-            cursor: pointer;
-            position: absolute;
-            left: 10px;
-        }
-
-        .menu-item {
-            padding: 10px;
-            cursor: pointer;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid white;
-            border-radius: 5px;
-            margin: 5px 0;
-            transition: background 0.3s;
-            color: white;
-            font-weight: bold;
-            text-align: center;
-            width: 150px;
-        }
-
-        .menu-item:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        button {
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            margin-top: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            width: 100%;
-        }
-
-        /* Color classes for buttons */
-        .add-member-button {
-            background-color: #4CAF50; /* Green */
-            color: white;
-        }
-
-        .delete-member-button {
-            background-color: #f44336; /* Red */
-            color: white;
-        }
-
-        .total-member-button {
-            background-color: #2196F3; /* Blue */
-            color: white;
-        }
-
-        .admin-panel {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: absolute;
-            top: 80px;
-            left: 0;
-            right: 0;
-            padding: 20px;
-            z-index: 5;
-        }
-
         h1 {
-            font-size: 1.5em; /* Adjusted for mobile friendliness */
-            margin: 0; /* Removed margin for better alignment */
+            font-size: 36px; /* Adjusted size */
+            margin: 0;
+            color: #00bcd4; /* Heading color */
+        }
+        .menu {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #1f1f1f;
+            border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .menu div {
+            cursor: pointer;
+            padding: 10px;
+            color: #00bcd4;
+            border: 1px solid transparent;
+        }
+        .menu div:hover {
+            background-color: #292929;
+            border: 1px solid #00bcd4;
+        }
+        .content {
+            margin-left: 150px;
+            padding: 20px;
+        }
+        .section {
+            display: none;
+            background-color: #1f1f1f;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        button {
+            background-color: #00bcd4;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            border: 1px solid #00bcd4;
+            border-radius: 5px;
+            width: calc(100% - 22px);
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-
-    <div id="welcomeAnimation">Welcome to FSK HUB!</div>
-    <audio id="welcomeSound" src="your-sound-file-url.mp3"></audio>
-
-    <div id="header">
-        <div id="menuToggle">☰</div>
+    <header>
         <h1>FSK HUB</h1>
+    </header>
+    <div class="menu">
+        <div onclick="showSection('addMember')">Add Members ➕</div>
+        <div onclick="showSection('deleteMember')">Delete Members ➖</div>
+        <div onclick="showSection('totalMembers')">Total Members 🟢</div>
     </div>
-    
-    <div id="menu" class="hidden">
-        <div class="menu-item" onclick="showSection('addMemberSection')">Add Members ➕</div>
-        <div class="menu-item" onclick="showSection('deleteMemberSection')">Delete Members ➖</div>
-        <div class="menu-item" onclick="showSection('totalMembersSection')">Total Members 🟢</div>
-    </div>
-
-    <div class="admin-panel">
-        <div id="addMemberSection" class="section hidden">
-            <h2>Add Member</h2>
-            <input type="text" id="newMemberName" placeholder="Enter member name" />
-            <button class="add-member-button" onclick="addMember()">Add</button>
+    <div class="content">
+        <div id="addMember" class="section">
+            <h2>Add New Member</h2>
+            <input type="text" id="memberName" placeholder="Enter member name">
+            <button onclick="addMember()">Add Member</button>
         </div>
-
-        <div id="deleteMemberSection" class="section hidden">
-            <h2>Delete Member</h2>
-            <ul id="currentMembersList"></ul>
-            <button class="delete-member-button" onclick="deleteSelectedMember()">Delete Selected</button>
+        <div id="deleteMember" class="section">
+            <h2>Delete Members</h2>
+            <ul id="memberList"></ul>
+            <button onclick="deleteMembers()">Delete Selected</button>
         </div>
-
-        <div id="totalMembersSection" class="section hidden">
+        <div id="totalMembers" class="section">
             <h2>Total Members</h2>
-            <ul id="totalMembersList"></ul>
-            <button class="total-member-button" onclick="showTotalMembers()">Show Total Members</button>
+            <p id="totalCount">Total: 0 Members</p>
         </div>
     </div>
-
     <script>
         const members = [];
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            // Show welcome animation
-            const welcomeAnimation = document.getElementById("welcomeAnimation");
-            const welcomeSound = document.getElementById("welcomeSound");
-            welcomeAnimation.style.display = 'block';
-            welcomeSound.play();
-            setTimeout(() => {
-                welcomeAnimation.style.display = 'none';
-            }, 2000);
-        });
-
-        document.getElementById('menuToggle').addEventListener('click', () => {
-            const menu = document.getElementById('menu');
-            menu.classList.toggle('show');
-        });
+        const memberListElement = document.getElementById('memberList');
+        const totalCountElement = document.getElementById('totalCount');
 
         function showSection(sectionId) {
-            hideAllSections();
-            document.getElementById(sectionId).classList.remove("hidden");
-            const menu = document.getElementById('menu');
-            menu.classList.remove('show');
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.style.display = 'none');
+            document.getElementById(sectionId).style.display = 'block';
+            updateMemberList();
         }
 
         function addMember() {
-            const memberName = document.getElementById("newMemberName").value;
+            const memberName = document.getElementById('memberName').value;
             if (memberName) {
-                const member = {
-                    name: memberName,
-                    date: new Date().toLocaleDateString()
-                };
-                members.push(member);
-                document.getElementById("newMemberName").value = '';
-                alert('Member added!');
-                updateTotalMembers();
+                members.push(memberName);
+                document.getElementById('memberName').value = '';
+                updateMemberList();
+                updateTotalCount();
             }
         }
 
-        function updateTotalMembers() {
-            const totalMembersList = document.getElementById("totalMembersList");
-            totalMembersList.innerHTML = '';
-            members.forEach(member => {
-                const li = document.createElement("li");
-                li.textContent = `${member.name} (Joined: ${member.date})`;
-                totalMembersList.appendChild(li);
+        function deleteMembers() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+            checkboxes.forEach(checkbox => {
+                const index = checkbox.getAttribute('data-index');
+                members.splice(index, 1);
+            });
+            updateMemberList();
+            updateTotalCount();
+        }
+
+        function updateMemberList() {
+            memberListElement.innerHTML = '';
+            members.forEach((member, index) => {
+                memberListElement.innerHTML += `<li><input type="checkbox" data-index="${index}"> ${member}</li>`;
             });
         }
 
-        function deleteSelectedMember() {
-            const memberName = prompt("Enter the name of the member to delete:");
-            const index = members.findIndex(member => member.name === memberName);
-            if (index !== -1) {
-                members.splice(index, 1);
-                alert(`${memberName} has been removed.`);
-                updateTotalMembers();
-            } else {
-                alert('Member not found.');
-            }
+        function updateTotalCount() {
+            totalCountElement.innerText = `Total: ${members.length} Members`;
         }
 
-        function showTotalMembers() {
-            alert(`Total Members: ${members.length}`);
-        }
-
-        // Hide all sections
-        function hideAllSections() {
-            document.getElementById("addMemberSection").classList.add("hidden");
-            document.getElementById("deleteMemberSection").classList.add("hidden");
-            document.getElementById("totalMembersSection").classList.add("hidden");
-        }
+        // Show the first section by default
+        showSection('addMember');
     </script>
 </body>
 </html>
