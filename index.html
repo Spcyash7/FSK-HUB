@@ -3,246 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FSK Admin Panel</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            background-color: #f0f4ff;
-            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff; /* Light blue background */
             color: #333;
         }
-        .sidebar {
-            height: 100%;
-            width: 220px;
-            position: fixed;
-            left: -220px;
-            background-color: #4a90e2;
-            transition: 0.3s;
-            padding: 15px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-        }
-        .sidebar h2 {
-            color: #ffffff;
-            font-size: 1.5em;
-            margin-bottom: 20px;
-        }
-        .sidebar a {
-            color: #ffffff;
-            text-decoration: none;
-            padding: 10px;
-            display: block;
-            border-radius: 4px;
-            transition: background 0.3s;
-        }
-        .sidebar a:hover {
-            background-color: #5a9bd4;
-        }
-        .toggle-btn {
-            cursor: pointer;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin: 10px;
-            font-size: 16px;
-        }
-        .dashboard {
-            margin-left: 220px;
-            transition: margin-left 0.3s;
-            padding: 20px;
-        }
-        .header {
-            background-color: #007bff;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+        h1, h2 {
             text-align: center;
+            font-size: 2.5rem; /* Large font size */
+        }
+        #header {
+            background-color: #007bff; /* Blue bar */
+            color: white;
+            padding: 10px 0;
+        }
+        .container {
+            margin-top: 20px;
+        }
+        .btn-custom {
+            background-color: #28a745;
+            color: white;
         }
         .hidden {
             display: none;
         }
-        .members-list {
+        .member-list {
             list-style-type: none;
             padding: 0;
         }
-        .members-list li {
-            background: #ffffff;
-            margin: 5px 0;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        .member-list li {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-        }
-        .btn {
-            border-radius: 25px;
-            margin-top: 10px;
-        }
-        .alert {
-            margin-top: 10px;
-        }
-        input {
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                left: -100%;
-            }
-            .dashboard {
-                margin-left: 0;
-            }
+            margin: 5px 0;
         }
     </style>
 </head>
 <body>
-
-    <!-- Sidebar -->
-    <div class="sidebar" id="sidebar">
-        <h2>FSK Admin Panel</h2>
-        <a href="#" id="currentMembersTab">CURRENT MEMBER 💚</a>
-        <a href="#" id="addMemberTab">ADD MEMBER</a>
-        <a href="#" id="deleteMemberTab">DELETE MEMBER</a>
-        <a href="#" id="createAdminTab" style="display: none;">CREATE ADMIN</a> <!-- Initially hidden -->
+    <div id="header">
+        <h1>Admin Dashboard</h1>
+        <h2>FSK CLAN</h2>
     </div>
 
-    <!-- Dashboard -->
-    <div class="dashboard">
-        <button class="toggle-btn" id="toggleBtn">☰</button>
-        <div class="header">
-            <h1>Admin Dashboard</h1>
+    <div class="container">
+        <div>
+            <button id="membersBtn" class="btn btn-custom">Current Members 💚</button>
+            <button id="addMemberBtn" class="btn btn-custom">Add Member</button>
+            <button id="deleteMemberBtn" class="btn btn-custom">Delete Member</button>
+            <button id="createAdminBtn" class="btn btn-custom">Create Admin</button>
         </div>
 
+        <!-- Current Members Section -->
         <div id="membersSection" class="hidden">
             <h3>Current Members</h3>
-            <p id="totalMembers" class="fw-bold">Total Members: 0</p> <!-- Total members count -->
-            <ul id="membersList" class="members-list"></ul>
+            <ul id="membersList" class="member-list"></ul>
+            <p id="totalMembers">Total Members: 0</p>
         </div>
 
+        <!-- Add Member Section -->
         <div id="addMemberSection" class="hidden">
-            <h3>Add New Member</h3>
-            <input type="text" id="newMember" class="form-control" placeholder="Enter player name" required>
-            <button id="addMember" class="btn btn-success">Add Member</button>
-            <div id="addMemberAlert" class="alert alert-success hidden">Member added successfully!</div>
+            <h3>Add Member</h3>
+            <input type="text" id="newMember" placeholder="Enter member name" />
+            <button id="addMember" class="btn btn-custom">Add</button>
         </div>
 
+        <!-- Delete Member Section -->
         <div id="deleteMemberSection" class="hidden">
             <h3>Delete Member</h3>
-            <ul id="deleteMembersList" class="members-list"></ul>
-            <div id="deleteMemberAlert" class="alert alert-danger hidden">Member deleted successfully!</div>
+            <ul id="deleteMembersList" class="member-list"></ul>
         </div>
 
+        <!-- Create Admin Section -->
         <div id="createAdminSection" class="hidden">
-            <h3>Create New Admin</h3>
-            <input type="text" id="newAdminUsername" class="form-control mb-2" placeholder="New Username" required>
-            <input type="password" id="newAdminPassword" class="form-control mb-2" placeholder="New Password" required>
-            <button id="createAdmin" class="btn btn-warning">Generate Admin</button>
-            <p id="adminCreatedMsg" class="text-success hidden">Admin created successfully!</p>
+            <h3>Create Admin</h3>
+            <input type="text" id="newAdminUsername" placeholder="New Admin Username" />
+            <input type="password" id="newAdminPassword" placeholder="New Admin Password" />
+            <button id="createAdmin" class="btn btn-custom">Create</button>
+            <p id="adminCreatedMsg" class="hidden">Admin created successfully!</p>
         </div>
     </div>
 
     <script>
-        const toggleBtn = document.getElementById("toggleBtn");
-        const sidebar = document.getElementById("sidebar");
-        const dashboard = document.querySelector(".dashboard");
-
-        const currentMembersTab = document.getElementById("currentMembersTab");
-        const addMemberTab = document.getElementById("addMemberTab");
-        const deleteMemberTab = document.getElementById("deleteMemberTab");
-        const createAdminTab = document.getElementById("createAdminTab");
-
-        const membersSection = document.getElementById("membersSection");
-        const addMemberSection = document.getElementById("addMemberSection");
-        const deleteMemberSection = document.getElementById("deleteMemberSection");
-        const createAdminSection = document.getElementById("createAdminSection");
-
+        const members = JSON.parse(localStorage.getItem('members')) || [];
         const membersList = document.getElementById("membersList");
-        const newMemberInput = document.getElementById("newMember");
-        const addMemberBtn = document.getElementById("addMember");
-        const addMemberAlert = document.getElementById("addMemberAlert");
-
+        const totalMembers = document.getElementById("totalMembers");
         const deleteMembersList = document.getElementById("deleteMembersList");
-        const deleteMemberAlert = document.getElementById("deleteMemberAlert");
-
-        const newAdminUsername = document.getElementById("newAdminUsername");
-        const newAdminPassword = document.getElementById("newAdminPassword");
-        const createAdminBtn = document.getElementById("createAdmin");
-        const adminCreatedMsg = document.getElementById("adminCreatedMsg");
-
-        const members = [];
-        const mainAdminUsername = "@FSK_HUB"; // Replace with your admin username
-
-        // Toggle sidebar
-        toggleBtn.addEventListener("click", function() {
-            if (sidebar.style.left === "0px") {
-                sidebar.style.left = "-220px";
-                dashboard.style.marginLeft = "0";
-            } else {
-                sidebar.style.left = "0";
-                dashboard.style.marginLeft = "220px";
-            }
-        });
 
         // Show Current Members
-        currentMembersTab.addEventListener("click", function () {
+        document.getElementById("membersBtn").addEventListener("click", function() {
             hideAllSections();
-            membersSection.classList.remove("hidden");
+            document.getElementById("membersSection").classList.remove("hidden");
             updateMembersList();
         });
 
         // Show Add Member Section
-        addMemberTab.addEventListener("click", function () {
+        document.getElementById("addMemberBtn").addEventListener("click", function() {
             hideAllSections();
-            addMemberSection.classList.remove("hidden");
+            document.getElementById("addMemberSection").classList.remove("hidden");
         });
 
         // Show Delete Member Section
-        deleteMemberTab.addEventListener("click", function () {
+        document.getElementById("deleteMemberBtn").addEventListener("click", function() {
             hideAllSections();
-            deleteMemberSection.classList.remove("hidden");
+            document.getElementById("deleteMemberSection").classList.remove("hidden");
             updateDeleteMembersList();
         });
 
-        // Show Create Admin Section only for main admin
-        if (mainAdminUsername === "@FSK_HUB") {
-            createAdminTab.style.display = "block"; // Show Create Admin tab for you only
-            createAdminTab.addEventListener("click", function () {
-                hideAllSections();
-                createAdminSection.classList.remove("hidden");
-            });
-        }
+        // Show Create Admin Section
+        document.getElementById("createAdminBtn").addEventListener("click", function() {
+            hideAllSections();
+            document.getElementById("createAdminSection").classList.remove("hidden");
+        });
 
-        // Add member
-        addMemberBtn.addEventListener("click", function () {
-            const memberName = newMemberInput.value.trim();
-            if (memberName) {
-                members.push(memberName);
+        // Add Member Function
+        document.getElementById("addMember").addEventListener("click", function() {
+            const newMember = document.getElementById("newMember").value.trim();
+            if (newMember) {
+                members.push(newMember);
+                localStorage.setItem('members', JSON.stringify(members)); // Save to localStorage
+                document.getElementById("newMember").value = "";
                 updateMembersList();
                 updateDeleteMembersList();
-                newMemberInput.value = ""; // Clear input field
-                addMemberAlert.classList.remove("hidden");
-                setTimeout(() => addMemberAlert.classList.add("hidden"), 3000);
             }
         });
 
-        // Delete member
-        function deleteMember(memberName) {
-            const index = members.indexOf(memberName);
+        // Delete Member Function
+        function deleteMember(member) {
+            const index = members.indexOf(member);
             if (index > -1) {
                 members.splice(index, 1);
+                localStorage.setItem('members', JSON.stringify(members)); // Update localStorage
                 updateMembersList();
                 updateDeleteMembersList();
-                deleteMemberAlert.classList.remove("hidden");
-                setTimeout(() => deleteMemberAlert.classList.add("hidden"), 3000);
             }
         }
 
-        // Update members list
+        // Update Members List
         function updateMembersList() {
             membersList.innerHTML = ""; // Clear the list
             members.forEach(member => {
@@ -250,10 +147,10 @@
                 li.textContent = member;
                 membersList.appendChild(li);
             });
-            document.getElementById("totalMembers").textContent = `Total Members: ${members.length}`; // Show total members
+            totalMembers.textContent = `Total Members: ${members.length}`; // Show total members
         }
 
-        // Update delete members list
+        // Update Delete Members List
         function updateDeleteMembersList() {
             deleteMembersList.innerHTML = ""; // Clear the list
             members.forEach(member => {
@@ -275,23 +172,26 @@
 
         // Hide all sections
         function hideAllSections() {
-            membersSection.classList.add("hidden");
-            addMemberSection.classList.add("hidden");
-            deleteMemberSection.classList.add("hidden");
-            createAdminSection.classList.add("hidden");
+            document.getElementById("membersSection").classList.add("hidden");
+            document.getElementById("addMemberSection").classList.add("hidden");
+            document.getElementById("deleteMemberSection").classList.add("hidden");
+            document.getElementById("createAdminSection").classList.add("hidden");
         }
 
         // Create new admin
-        createAdminBtn.addEventListener("click", function () {
-            const username = newAdminUsername.value.trim();
-            const password = newAdminPassword.value.trim();
+        document.getElementById("createAdmin").addEventListener("click", function() {
+            const username = document.getElementById("newAdminUsername").value.trim();
+            const password = document.getElementById("newAdminPassword").value.trim();
             if (username && password) {
-                adminCreatedMsg.classList.remove("hidden");
-                newAdminUsername.value = "";
-                newAdminPassword.value = "";
-                setTimeout(() => adminCreatedMsg.classList.add("hidden"), 3000);
+                document.getElementById("adminCreatedMsg").classList.remove("hidden");
+                document.getElementById("newAdminUsername").value = "";
+                document.getElementById("newAdminPassword").value = "";
+                setTimeout(() => document.getElementById("adminCreatedMsg").classList.add("hidden"), 3000);
             }
         });
+
+        // Initialize members list on load
+        updateMembersList();
     </script>
 </body>
 </html>
