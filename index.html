@@ -30,8 +30,8 @@
         }
 
         .section {
-            border-radius: 15px;
-            background: rgba(0, 0, 0, 0.7);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.8);
             padding: 20px;
             margin: 10px;
             width: 300px;
@@ -50,6 +50,21 @@
             display: flex;
         }
 
+        #header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            border-bottom: 1px solid white;
+        }
+
+        #menuToggle {
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
         .menu-item {
             padding: 10px;
             cursor: pointer;
@@ -57,25 +72,39 @@
             border-radius: 5px;
             margin: 5px 0;
             transition: background 0.3s;
+            color: white;
+            font-weight: bold;
+            text-align: center;
         }
 
         .menu-item:hover {
-            background: rgba(255, 255, 255, 0.1);
+            opacity: 0.7;
         }
 
-        #header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
+        button {
             padding: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            border-bottom: 1px solid white;
+            border: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
         }
 
-        #menuToggle {
-            font-size: 1.5em;
-            cursor: pointer;
+        /* Color classes for buttons */
+        .add-member-button {
+            background-color: #4CAF50; /* Green */
+            color: white;
+        }
+
+        .delete-member-button {
+            background-color: #f44336; /* Red */
+            color: white;
+        }
+
+        .total-member-button {
+            background-color: #2196F3; /* Blue */
+            color: white;
         }
     </style>
 </head>
@@ -88,6 +117,7 @@
         <div id="menuToggle">☰</div>
         <h1>FSK CLAN</h1>
     </div>
+    
     <div id="menu" class="hidden">
         <div class="menu-item" onclick="showSection('addMemberSection')">Add Members ➕</div>
         <div class="menu-item" onclick="showSection('deleteMemberSection')">Delete Members ➖</div>
@@ -97,18 +127,19 @@
     <div id="addMemberSection" class="section hidden">
         <h2>Add Member</h2>
         <input type="text" id="newMemberName" placeholder="Enter member name" />
-        <button onclick="addMember()">Add</button>
+        <button class="add-member-button" onclick="addMember()">Add</button>
     </div>
 
     <div id="deleteMemberSection" class="section hidden">
         <h2>Delete Member</h2>
         <ul id="currentMembersList"></ul>
-        <button onclick="deleteSelectedMember()">Delete Selected</button>
+        <button class="delete-member-button" onclick="deleteSelectedMember()">Delete Selected</button>
     </div>
 
     <div id="totalMembersSection" class="section hidden">
         <h2>Total Members</h2>
         <ul id="totalMembersList"></ul>
+        <button class="total-member-button" onclick="showTotalMembers()">Show Total Members</button>
     </div>
 
     <script>
@@ -146,8 +177,8 @@
                 };
                 members.push(member);
                 document.getElementById("newMemberName").value = '';
-                updateTotalMembers();
                 alert('Member added!');
+                updateTotalMembers();
             }
         }
 
@@ -171,6 +202,10 @@
             } else {
                 alert('Member not found.');
             }
+        }
+
+        function showTotalMembers() {
+            alert(`Total Members: ${members.length}`);
         }
 
         // Hide all sections
