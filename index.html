@@ -26,6 +26,7 @@
         .btn-custom {
             background-color: #007bff;
             color: white;
+            margin: 5px 0;
         }
         .hidden {
             display: none;
@@ -38,9 +39,13 @@
             display: flex;
             justify-content: space-between;
             margin: 10px 0;
+            font-size: 1.5rem; /* Adjust font size for members */
         }
         .btn-danger {
             background-color: #dc3545; /* Red button for delete */
+        }
+        .admin-only {
+            display: none; /* Initially hide admin-only sections */
         }
     </style>
 </head>
@@ -79,7 +84,7 @@
         </div>
 
         <!-- Create Admin Section -->
-        <div id="createAdminSection" class="hidden">
+        <div id="createAdminSection" class="admin-only hidden">
             <h3>Create Admin</h3>
             <input type="text" id="newAdminUsername" placeholder="New Admin Username" />
             <input type="password" id="newAdminPassword" placeholder="New Admin Password" />
@@ -114,7 +119,7 @@
             updateDeleteMembersList();
         });
 
-        // Show Create Admin Section
+        // Show Create Admin Section (only visible to the primary admin)
         document.getElementById("createAdminBtn").addEventListener("click", function() {
             hideAllSections();
             document.getElementById("createAdminSection").classList.remove("hidden");
