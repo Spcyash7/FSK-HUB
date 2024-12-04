@@ -9,24 +9,42 @@
         body {
             background-color: #181818; /* Dark background */
             color: #ffffff; /* White text */
-        }
-        h1, h2 {
-            text-align: center;
-            font-size: 3rem; /* Increased font size */
-            margin: 20px 0;
+            border-radius: 15px;
+            overflow: hidden;
+            padding: 20px;
         }
         #header {
             background-color: #343a40; /* Dark gray header */
+            border-radius: 15px 15px 0 0;
             color: white;
             padding: 20px 0;
+            text-align: center;
+        }
+        h1, h2 {
+            font-size: 2.5rem; /* Adjusted font size */
+            margin: 10px 0;
+        }
+        .menu {
+            cursor: pointer;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            border-radius: 5px;
         }
         .container {
             margin-top: 20px;
+            border-radius: 15px;
+            background-color: #2a2a2a; /* Darker background for content */
+            padding: 20px;
         }
         .btn-custom {
             background-color: #007bff;
             color: white;
             margin: 5px 0;
+            border-radius: 5px;
         }
         .hidden {
             display: none;
@@ -44,19 +62,6 @@
         .btn-danger {
             background-color: #dc3545; /* Red button for delete */
         }
-        .admin-only {
-            display: none; /* Initially hide admin-only sections */
-        }
-        .menu {
-            cursor: pointer;
-            padding: 10px;
-            background: #007bff;
-            color: white;
-            border: none;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
         .animation {
             display: flex;
             justify-content: center;
@@ -68,6 +73,14 @@
             left: 0;
             right: 0;
             z-index: 1000;
+            border-radius: 15px;
+        }
+        .tab-content {
+            margin-top: 20px;
+        }
+        .tab-button {
+            margin-bottom: 10px;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -80,33 +93,30 @@
     <div class="container">
         <button id="menuBtn" class="menu">☰ Menu</button>
         <div id="menu" class="hidden">
-            <button id="membersBtn" class="btn btn-custom">Current Members 💚</button>
-            <button id="addMemberBtn" class="btn btn-custom">Add Member ➕</button>
-            <button id="deleteMemberBtn" class="btn btn-custom">Delete Member ➖</button>
-            <button id="totalMembersBtn" class="btn btn-custom">Total Members 🟢</button>
+            <button id="membersBtn" class="btn btn-custom tab-button">Current Members 💚</button>
+            <button id="addMemberBtn" class="btn btn-custom tab-button">Add Member ➕</button>
+            <button id="deleteMemberBtn" class="btn btn-custom tab-button">Delete Member ➖</button>
+            <button id="totalMembersBtn" class="btn btn-custom tab-button">Total Members 🟢</button>
         </div>
 
-        <!-- Current Members Section -->
-        <div id="membersSection" class="hidden">
+        <!-- Tab Content -->
+        <div id="membersSection" class="tab-content hidden">
             <h3>Current Members</h3>
             <ul id="membersList" class="member-list"></ul>
         </div>
 
-        <!-- Add Member Section -->
-        <div id="addMemberSection" class="hidden">
+        <div id="addMemberSection" class="tab-content hidden">
             <h3>Add Member</h3>
             <input type="text" id="newMember" placeholder="Enter member name" />
             <button id="addMember" class="btn btn-custom">Add</button>
         </div>
 
-        <!-- Delete Member Section -->
-        <div id="deleteMemberSection" class="hidden">
+        <div id="deleteMemberSection" class="tab-content hidden">
             <h3>Delete Member</h3>
             <ul id="deleteMembersList" class="member-list"></ul>
         </div>
 
-        <!-- Total Members Section -->
-        <div id="totalMembersSection" class="hidden">
+        <div id="totalMembersSection" class="tab-content hidden">
             <h3>Total Members</h3>
             <p id="totalMembers">Total Members: 0</p>
             <ul id="totalMembersList" class="member-list"></ul>
@@ -132,7 +142,7 @@
             setTimeout(() => {
                 document.getElementById("animation").style.display = "none";
                 updateMembersList();
-            }, 3000); // Show for 3 seconds
+            }, 2000); // Show for 2 seconds
         };
 
         // Show or hide the menu
