@@ -3,241 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>FSK CLAN Admin Dashboard</title>
     <style>
         body {
-            background-color: #181818; /* Dark background */
-            color: #ffffff; /* White text */
-            border-radius: 15px;
-            overflow: hidden;
-            padding: 20px;
-        }
-        #header {
-            background-color: #343a40; /* Dark gray header */
-            border-radius: 15px 15px 0 0;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('your-background-image-url.jpg'); /* Change this to your image URL */
+            background-size: cover;
+            background-repeat: no-repeat;
             color: white;
-            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #welcomeAnimation {
+            display: none;
+            font-size: 2.5em;
             text-align: center;
+            margin-top: 20%;
         }
-        h1, h2 {
-            font-size: 2.5rem; /* Adjusted font size */
-            margin: 10px 0;
-        }
-        .menu {
-            cursor: pointer;
-            padding: 10px;
-            background: #007bff;
-            color: white;
-            border: none;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-        .container {
-            margin-top: 20px;
-            border-radius: 15px;
-            background-color: #2a2a2a; /* Darker background for content */
-            padding: 20px;
-        }
-        .btn-custom {
-            background-color: #007bff;
-            color: white;
-            margin: 5px 0;
-            border-radius: 5px;
-        }
+
         .hidden {
             display: none;
         }
-        .member-list {
-            list-style-type: none;
-            padding: 0;
-        }
-        .member-list li {
-            display: flex;
-            justify-content: space-between;
-            margin: 10px 0;
-            font-size: 1.5rem; /* Adjust font size for members */
-        }
-        .btn-danger {
-            background-color: #dc3545; /* Red button for delete */
-        }
-        .animation {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.8);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
+
+        .section {
             border-radius: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            margin: 10px;
+            width: 300px;
+            transition: all 0.3s;
         }
-        .tab-content {
-            margin-top: 20px;
+
+        #menu {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 70px;
+            left: 10px;
         }
-        .tab-button {
-            margin-bottom: 10px;
+
+        #menu.show {
+            display: flex;
+        }
+
+        .menu-item {
+            padding: 10px;
+            cursor: pointer;
+            border: 1px solid white;
             border-radius: 5px;
+            margin: 5px 0;
+            transition: background 0.3s;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        #header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 1px solid white;
+        }
+
+        #menuToggle {
+            font-size: 1.5em;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
+
+    <div id="welcomeAnimation">Welcome to FSK-CLAN!</div>
+    <audio id="welcomeSound" src="your-sound-file-url.mp3"></audio>
+
     <div id="header">
-        <h1>Admin Dashboard</h1>
-        <h2>FSK CLAN</h2>
+        <div id="menuToggle">☰</div>
+        <h1>FSK CLAN</h1>
+    </div>
+    <div id="menu" class="hidden">
+        <div class="menu-item" onclick="showSection('addMemberSection')">Add Members ➕</div>
+        <div class="menu-item" onclick="showSection('deleteMemberSection')">Delete Members ➖</div>
+        <div class="menu-item" onclick="showSection('totalMembersSection')">Total Members 🟢</div>
     </div>
 
-    <div class="container">
-        <button id="menuBtn" class="menu">☰ Menu</button>
-        <div id="menu" class="hidden">
-            <button id="membersBtn" class="btn btn-custom tab-button">Current Members 💚</button>
-            <button id="addMemberBtn" class="btn btn-custom tab-button">Add Member ➕</button>
-            <button id="deleteMemberBtn" class="btn btn-custom tab-button">Delete Member ➖</button>
-            <button id="totalMembersBtn" class="btn btn-custom tab-button">Total Members 🟢</button>
-        </div>
-
-        <!-- Tab Content -->
-        <div id="membersSection" class="tab-content hidden">
-            <h3>Current Members</h3>
-            <ul id="membersList" class="member-list"></ul>
-        </div>
-
-        <div id="addMemberSection" class="tab-content hidden">
-            <h3>Add Member</h3>
-            <input type="text" id="newMember" placeholder="Enter member name" />
-            <button id="addMember" class="btn btn-custom">Add</button>
-        </div>
-
-        <div id="deleteMemberSection" class="tab-content hidden">
-            <h3>Delete Member</h3>
-            <ul id="deleteMembersList" class="member-list"></ul>
-        </div>
-
-        <div id="totalMembersSection" class="tab-content hidden">
-            <h3>Total Members</h3>
-            <p id="totalMembers">Total Members: 0</p>
-            <ul id="totalMembersList" class="member-list"></ul>
-        </div>
+    <div id="addMemberSection" class="section hidden">
+        <h2>Add Member</h2>
+        <input type="text" id="newMemberName" placeholder="Enter member name" />
+        <button onclick="addMember()">Add</button>
     </div>
 
-    <audio id="welcomeSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+    <div id="deleteMemberSection" class="section hidden">
+        <h2>Delete Member</h2>
+        <ul id="currentMembersList"></ul>
+        <button onclick="deleteSelectedMember()">Delete Selected</button>
+    </div>
 
-    <div id="animation" class="animation">
-        <h1>Welcome to FSK-CLAN!</h1>
+    <div id="totalMembersSection" class="section hidden">
+        <h2>Total Members</h2>
+        <ul id="totalMembersList"></ul>
     </div>
 
     <script>
-        const members = JSON.parse(localStorage.getItem('members')) || [];
-        const membersList = document.getElementById("membersList");
-        const deleteMembersList = document.getElementById("deleteMembersList");
-        const totalMembersList = document.getElementById("totalMembersList");
-        const totalMembersCount = document.getElementById("totalMembers");
-
-        // Play welcome sound and show animation
-        window.onload = function() {
-            document.getElementById("welcomeSound").play();
+        const members = [];
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Show welcome animation
+            const welcomeAnimation = document.getElementById("welcomeAnimation");
+            const welcomeSound = document.getElementById("welcomeSound");
+            welcomeAnimation.style.display = 'block';
+            welcomeSound.play();
             setTimeout(() => {
-                document.getElementById("animation").style.display = "none";
-                updateMembersList();
-            }, 2000); // Show for 2 seconds
-        };
-
-        // Show or hide the menu
-        document.getElementById("menuBtn").addEventListener("click", function() {
-            const menu = document.getElementById("menu");
-            menu.classList.toggle("hidden");
+                welcomeAnimation.style.display = 'none';
+            }, 2000);
         });
 
-        // Show Current Members
-        document.getElementById("membersBtn").addEventListener("click", function() {
+        document.getElementById('menuToggle').addEventListener('click', () => {
+            const menu = document.getElementById('menu');
+            menu.classList.toggle('show');
+        });
+
+        function showSection(sectionId) {
             hideAllSections();
-            document.getElementById("membersSection").classList.remove("hidden");
-            updateMembersList();
-        });
-
-        // Show Add Member Section
-        document.getElementById("addMemberBtn").addEventListener("click", function() {
-            hideAllSections();
-            document.getElementById("addMemberSection").classList.remove("hidden");
-        });
-
-        // Show Delete Member Section
-        document.getElementById("deleteMemberBtn").addEventListener("click", function() {
-            hideAllSections();
-            document.getElementById("deleteMemberSection").classList.remove("hidden");
-            updateDeleteMembersList();
-        });
-
-        // Show Total Members Section
-        document.getElementById("totalMembersBtn").addEventListener("click", function() {
-            hideAllSections();
-            document.getElementById("totalMembersSection").classList.remove("hidden");
-            updateTotalMembers();
-        });
-
-        // Add Member Function
-        document.getElementById("addMember").addEventListener("click", function() {
-            const newMember = document.getElementById("newMember").value.trim();
-            const joinDate = new Date().toLocaleDateString();
-            if (newMember) {
-                members.push({ name: newMember, date: joinDate });
-                localStorage.setItem('members', JSON.stringify(members)); // Save to localStorage
-                document.getElementById("newMember").value = "";
-                updateMembersList();
-                updateDeleteMembersList();
-                updateTotalMembers();
-            }
-        });
-
-        // Delete Member Function
-        function deleteMember(member) {
-            const index = members.findIndex(m => m.name === member.name);
-            if (index > -1) {
-                members.splice(index, 1);
-                localStorage.setItem('members', JSON.stringify(members)); // Update localStorage
-                updateMembersList();
-                updateDeleteMembersList();
-                updateTotalMembers();
-            }
+            document.getElementById(sectionId).classList.remove("hidden");
+            const menu = document.getElementById('menu');
+            menu.classList.remove('show');
         }
 
-        // Update Members List
-        function updateMembersList() {
-            membersList.innerHTML = ""; // Clear the list
-            members.forEach(member => {
-                const li = document.createElement("li");
-                li.textContent = `${member.name} (Joined: ${member.date})`;
-                membersList.appendChild(li);
-            });
-        }
-
-        // Update Delete Members List
-        function updateDeleteMembersList() {
-            deleteMembersList.innerHTML = ""; // Clear the list
-            members.forEach(member => {
-                const li = document.createElement("li");
-                li.textContent = member.name;
-                const deleteBtn = document.createElement("button");
-                deleteBtn.textContent = "Delete";
-                deleteBtn.className = "btn btn-danger btn-sm";
-                deleteBtn.onclick = function() {
-                    deleteMember(member);
+        function addMember() {
+            const memberName = document.getElementById("newMemberName").value;
+            if (memberName) {
+                const member = {
+                    name: memberName,
+                    date: new Date().toLocaleDateString()
                 };
-                li.appendChild(deleteBtn);
-                deleteMembersList.appendChild(li);
-            });
-            if (members.length === 0) {
-                deleteMembersList.innerHTML = "<li>No members found.</li>";
+                members.push(member);
+                document.getElementById("newMemberName").value = '';
+                updateTotalMembers();
+                alert('Member added!');
             }
         }
 
-        // Update Total Members Section
         function updateTotalMembers() {
-            totalMembersCount.textContent = `Total Members: ${members.length}`; // Show total members
-            totalMembersList.innerHTML = ""; // Clear the list
+            const totalMembersList = document.getElementById("totalMembersList");
+            totalMembersList.innerHTML = '';
             members.forEach(member => {
                 const li = document.createElement("li");
                 li.textContent = `${member.name} (Joined: ${member.date})`;
@@ -245,9 +161,20 @@
             });
         }
 
+        function deleteSelectedMember() {
+            const memberName = prompt("Enter the name of the member to delete:");
+            const index = members.findIndex(member => member.name === memberName);
+            if (index !== -1) {
+                members.splice(index, 1);
+                alert(`${memberName} has been removed.`);
+                updateTotalMembers();
+            } else {
+                alert('Member not found.');
+            }
+        }
+
         // Hide all sections
         function hideAllSections() {
-            document.getElementById("membersSection").classList.add("hidden");
             document.getElementById("addMemberSection").classList.add("hidden");
             document.getElementById("deleteMemberSection").classList.add("hidden");
             document.getElementById("totalMembersSection").classList.add("hidden");
