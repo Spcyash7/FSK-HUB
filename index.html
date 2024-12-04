@@ -16,6 +16,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            height: 100vh; /* Ensure the body takes full height */
         }
 
         #welcomeAnimation {
@@ -36,6 +37,7 @@
             margin: 10px;
             width: 300px;
             transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
 
         #menu {
@@ -44,6 +46,7 @@
             position: absolute;
             top: 70px;
             left: 10px;
+            z-index: 10; /* Ensure the menu is on top */
         }
 
         #menu.show {
@@ -68,6 +71,7 @@
         .menu-item {
             padding: 10px;
             cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
             border: 1px solid white;
             border-radius: 5px;
             margin: 5px 0;
@@ -75,10 +79,11 @@
             color: white;
             font-weight: bold;
             text-align: center;
+            width: 150px; /* Fixed width for consistency */
         }
 
         .menu-item:hover {
-            opacity: 0.7;
+            background: rgba(255, 255, 255, 0.2);
         }
 
         button {
@@ -106,6 +111,18 @@
             background-color: #2196F3; /* Blue */
             color: white;
         }
+
+        .admin-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: absolute; /* Make it float above the background */
+            top: 80px; /* Position it below the header */
+            left: 0;
+            right: 0;
+            padding: 20px;
+            z-index: 5;
+        }
     </style>
 </head>
 <body>
@@ -124,22 +141,24 @@
         <div class="menu-item" onclick="showSection('totalMembersSection')">Total Members 🟢</div>
     </div>
 
-    <div id="addMemberSection" class="section hidden">
-        <h2>Add Member</h2>
-        <input type="text" id="newMemberName" placeholder="Enter member name" />
-        <button class="add-member-button" onclick="addMember()">Add</button>
-    </div>
+    <div class="admin-panel">
+        <div id="addMemberSection" class="section hidden">
+            <h2>Add Member</h2>
+            <input type="text" id="newMemberName" placeholder="Enter member name" />
+            <button class="add-member-button" onclick="addMember()">Add</button>
+        </div>
 
-    <div id="deleteMemberSection" class="section hidden">
-        <h2>Delete Member</h2>
-        <ul id="currentMembersList"></ul>
-        <button class="delete-member-button" onclick="deleteSelectedMember()">Delete Selected</button>
-    </div>
+        <div id="deleteMemberSection" class="section hidden">
+            <h2>Delete Member</h2>
+            <ul id="currentMembersList"></ul>
+            <button class="delete-member-button" onclick="deleteSelectedMember()">Delete Selected</button>
+        </div>
 
-    <div id="totalMembersSection" class="section hidden">
-        <h2>Total Members</h2>
-        <ul id="totalMembersList"></ul>
-        <button class="total-member-button" onclick="showTotalMembers()">Show Total Members</button>
+        <div id="totalMembersSection" class="section hidden">
+            <h2>Total Members</h2>
+            <ul id="totalMembersList"></ul>
+            <button class="total-member-button" onclick="showTotalMembers()">Show Total Members</button>
+        </div>
     </div>
 
     <script>
