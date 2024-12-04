@@ -20,7 +20,7 @@
         }
         h1 {
             margin: 0;
-            font-size: 3.6cm; /* Adjust the size as needed */
+            font-size: 3.6cm; /* Top heading size */
             color: #00aaff;
         }
         .menu {
@@ -49,7 +49,7 @@
         .button.red {
             background-color: red;
         }
-        input[type="text"] {
+        input[type="text"], input[type="password"] {
             width: calc(100% - 20px);
             padding: 10px;
             margin: 10px 0;
@@ -68,10 +68,37 @@
             border-radius: 5px;
             margin: 10px 0;
         }
+        .hidden {
+            display: none;
+        }
+        .login-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #1c1c1c;
+        }
+        .login-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <header>
+    <div class="login-page" id="loginPage">
+        <h1>Login Admin</h1>
+        <input type="text" id="loginId" placeholder="Enter User ID">
+        <input type="password" id="loginPassword" placeholder="Enter Password">
+        <button class="login-btn" onclick="login()">Login</button>
+        <div class="notification" id="loginNotification"></div>
+    </div>
+
+    <header class="hidden" id="header">
         <div class="menu" onclick="toggleMenu()">☰</div>
         <h1>FSK HUB</h1>
     </header>
@@ -79,39 +106,62 @@
         <div class="button" onclick="showSection('addMember')">Add Members ➕</div>
         <div class="button" onclick="showSection('deleteMember')">Delete Members ➖</div>
         <div class="button" onclick="showSection('totalMembers')">Total Members 🟢</div>
+        <div class="button" onclick="showSection('createAdmin')">Create Admin 🔑</div>
     </div>
-    
-    <div id="addMember" class="section">
+
+    <div id="addMember" class="section hidden">
         <input type="text" id="memberName" placeholder="Enter Member Name">
         <div class="button" onclick="addMember()">Add Member</div>
         <div class="notification" id="addNotification">Member added successfully!</div>
     </div>
-    
-    <div id="deleteMember" class="section" style="display:none;">
+
+    <div id="deleteMember" class="section hidden">
         <ul id="membersList" class="members-list"></ul>
         <div class="button red" onclick="deleteMember()">Delete Member</div>
     </div>
-    
-    <div id="totalMembers" class="section" style="display:none;">
+
+    <div id="totalMembers" class="section hidden">
         <div>Total Members: <span id="memberCount">0</span></div>
         <ul id="memberDetails" class="members-list"></ul>
     </div>
 
+    <div id="createAdmin" class="section hidden">
+        <input type="text" id="newAdminUser" placeholder="New Admin Username">
+        <input type="password" id="newAdminPassword" placeholder="New Admin Password">
+        <div class="button" onclick="generateAdmin()">Generate</div>
+        <div class="notification" id="generateNotification"></div>
+    </div>
+
     <script>
         let members = [];
+        const validId = 'FSK_QUADRILL';
+        const validPassword = 'Naruto8844';
         
+        function login() {
+            const userId = document.getElementById('loginId').value;
+            const password = document.getElementById('loginPassword').value;
+            if (userId === validId && password === validPassword) {
+                document.getElementById('loginPage').classList.add('hidden');
+                document.getElementById('header').classList.remove('hidden');
+                document.getElementById('dashboard').classList.add('active');
+            } else {
+                document.getElementById('loginNotification').innerText = 'Invalid ID or Password';
+                document.getElementById('loginNotification').style.display = 'block';
+            }
+        }
+
         function toggleMenu() {
             const dashboard = document.getElementById('dashboard');
             dashboard.classList.toggle('active');
         }
 
         function showSection(section) {
-            const sections = ['addMember', 'deleteMember', 'totalMembers'];
+            const sections = ['addMember', 'deleteMember', 'totalMembers', 'createAdmin'];
             sections.forEach(sec => {
-                document.getElementById(sec).style.display = 'none';
+                document.getElementById(sec).classList.add('hidden');
             });
-            document.getElementById(section).style.display = 'block';
-            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById(section).classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('active');
         }
 
         function addMember() {
@@ -150,6 +200,18 @@
                 listItem.innerText = member;
                 memberDetails.appendChild(listItem);
             });
+        }
+
+        function generateAdmin() {
+            const newUser = document.getElementById('newAdminUser').value;
+            const newPassword = document.getElementById('newAdminPassword').value;
+            if (newUser && newPassword) {
+                document.getElementById('generateNotification').innerText = `Generated: User - ${newUser}, Password - ${newPassword}`;
+                document.getElementById('generateNotification').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('generateNotification').style.display = 'none';
+                }, 5000);
+            }
         }
     </script>
 </body>
