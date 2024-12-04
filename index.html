@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            background-color: #181818; /* Black background */
+            background-color: #181818; /* Dark background */
             color: #ffffff; /* White text */
         }
         h1, h2 {
@@ -57,9 +57,17 @@
             margin-bottom: 20px;
             border-radius: 5px;
         }
-        .dropdown-menu {
-            background-color: #343a40; /* Dark background for dropdown */
-            border: none;
+        .animation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
         }
     </style>
 </head>
@@ -73,16 +81,15 @@
         <button id="menuBtn" class="menu">☰ Menu</button>
         <div id="menu" class="hidden">
             <button id="membersBtn" class="btn btn-custom">Current Members 💚</button>
-            <button id="addMemberBtn" class="btn btn-custom">Add Member</button>
-            <button id="deleteMemberBtn" class="btn btn-custom">Delete Member</button>
-            <button id="createAdminBtn" class="btn btn-custom">Create Admin</button>
+            <button id="addMemberBtn" class="btn btn-custom">Add Member ➕</button>
+            <button id="deleteMemberBtn" class="btn btn-custom">Delete Member ➖</button>
+            <button id="totalMembersBtn" class="btn btn-custom">Total Members 🟢</button>
         </div>
 
         <!-- Current Members Section -->
         <div id="membersSection" class="hidden">
             <h3>Current Members</h3>
             <ul id="membersList" class="member-list"></ul>
-            <p id="totalMembers">Total Members: 0</p>
         </div>
 
         <!-- Add Member Section -->
@@ -98,30 +105,40 @@
             <ul id="deleteMembersList" class="member-list"></ul>
         </div>
 
-        <!-- Create Admin Section -->
-        <div id="createAdminSection" class="admin-only hidden">
-            <h3>Create Admin</h3>
-            <input type="text" id="newAdminUsername" placeholder="New Admin Username" />
-            <input type="password" id="newAdminPassword" placeholder="New Admin Password" />
-            <button id="createAdmin" class="btn btn-custom">Create</button>
-            <p id="adminCreatedMsg" class="hidden">Admin created successfully!</p>
+        <!-- Total Members Section -->
+        <div id="totalMembersSection" class="hidden">
+            <h3>Total Members</h3>
+            <p id="totalMembers">Total Members: 0</p>
+            <ul id="totalMembersList" class="member-list"></ul>
         </div>
+    </div>
+
+    <audio id="welcomeSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+
+    <div id="animation" class="animation">
+        <h1>Welcome to FSK-CLAN!</h1>
     </div>
 
     <script>
         const members = JSON.parse(localStorage.getItem('members')) || [];
         const membersList = document.getElementById("membersList");
-        const totalMembers = document.getElementById("totalMembers");
         const deleteMembersList = document.getElementById("deleteMembersList");
+        const totalMembersList = document.getElementById("totalMembersList");
+        const totalMembersCount = document.getElementById("totalMembers");
+
+        // Play welcome sound and show animation
+        window.onload = function() {
+            document.getElementById("welcomeSound").play();
+            setTimeout(() => {
+                document.getElementById("animation").style.display = "none";
+                updateMembersList();
+            }, 3000); // Show for 3 seconds
+        };
 
         // Show or hide the menu
         document.getElementById("menuBtn").addEventListener("click", function() {
             const menu = document.getElementById("menu");
-            if (menu.classList.contains("hidden")) {
-                menu.classList.remove("hidden");
-            } else {
-                menu.classList.add("hidden");
-            }
+            menu.classList.toggle("hidden");
         });
 
         // Show Current Members
@@ -144,32 +161,36 @@
             updateDeleteMembersList();
         });
 
-        // Show Create Admin Section (only visible to the primary admin)
-        document.getElementById("createAdminBtn").addEventListener("click", function() {
+        // Show Total Members Section
+        document.getElementById("totalMembersBtn").addEventListener("click", function() {
             hideAllSections();
-            document.getElementById("createAdminSection").classList.remove("hidden");
+            document.getElementById("totalMembersSection").classList.remove("hidden");
+            updateTotalMembers();
         });
 
         // Add Member Function
         document.getElementById("addMember").addEventListener("click", function() {
             const newMember = document.getElementById("newMember").value.trim();
+            const joinDate = new Date().toLocaleDateString();
             if (newMember) {
-                members.push(newMember);
+                members.push({ name: newMember, date: joinDate });
                 localStorage.setItem('members', JSON.stringify(members)); // Save to localStorage
                 document.getElementById("newMember").value = "";
                 updateMembersList();
                 updateDeleteMembersList();
+                updateTotalMembers();
             }
         });
 
         // Delete Member Function
         function deleteMember(member) {
-            const index = members.indexOf(member);
+            const index = members.findIndex(m => m.name === member.name);
             if (index > -1) {
                 members.splice(index, 1);
                 localStorage.setItem('members', JSON.stringify(members)); // Update localStorage
                 updateMembersList();
                 updateDeleteMembersList();
+                updateTotalMembers();
             }
         }
 
@@ -178,10 +199,9 @@
             membersList.innerHTML = ""; // Clear the list
             members.forEach(member => {
                 const li = document.createElement("li");
-                li.textContent = member;
+                li.textContent = `${member.name} (Joined: ${member.date})`;
                 membersList.appendChild(li);
             });
-            totalMembers.textContent = `Total Members: ${members.length}`; // Show total members
         }
 
         // Update Delete Members List
@@ -189,7 +209,7 @@
             deleteMembersList.innerHTML = ""; // Clear the list
             members.forEach(member => {
                 const li = document.createElement("li");
-                li.textContent = member;
+                li.textContent = member.name;
                 const deleteBtn = document.createElement("button");
                 deleteBtn.textContent = "Delete";
                 deleteBtn.className = "btn btn-danger btn-sm";
@@ -204,30 +224,24 @@
             }
         }
 
+        // Update Total Members Section
+        function updateTotalMembers() {
+            totalMembersCount.textContent = `Total Members: ${members.length}`; // Show total members
+            totalMembersList.innerHTML = ""; // Clear the list
+            members.forEach(member => {
+                const li = document.createElement("li");
+                li.textContent = `${member.name} (Joined: ${member.date})`;
+                totalMembersList.appendChild(li);
+            });
+        }
+
         // Hide all sections
         function hideAllSections() {
             document.getElementById("membersSection").classList.add("hidden");
             document.getElementById("addMemberSection").classList.add("hidden");
             document.getElementById("deleteMemberSection").classList.add("hidden");
-            document.getElementById("createAdminSection").classList.add("hidden");
-            document.getElementById("menu").classList.add("hidden");
+            document.getElementById("totalMembersSection").classList.add("hidden");
         }
-
-        // Create new admin
-        document.getElementById("createAdmin").addEventListener("click", function() {
-            const username = document.getElementById("newAdminUsername").value.trim();
-            const password = document.getElementById("newAdminPassword").value.trim();
-            if (username && password) {
-                document.getElementById("adminCreatedMsg").classList.remove("hidden");
-                document.getElementById("newAdminUsername").value = "";
-                document.getElementById("newAdminPassword").value = "";
-                setTimeout(() => document.getElementById("adminCreatedMsg").classList.add("hidden"), 3000);
-            }
-        });
-
-        // Initialize members list on load
-        updateMembersList();
     </script>
 </body>
-                </html>
-                
+</html>
