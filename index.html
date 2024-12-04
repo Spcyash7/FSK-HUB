@@ -74,6 +74,10 @@
         .fa {
             margin-right: 10px; /* Space for icon */
         }
+        .message {
+            color: green; /* Success message color */
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -90,6 +94,7 @@
             <h2>Add New Member</h2>
             <input type="text" id="memberName" placeholder="Enter member name">
             <button onclick="addMember()">Add Member</button>
+            <p id="addMessage" class="message"></p>
         </div>
         <div id="deleteMember" class="section">
             <h2>Delete Members</h2>
@@ -98,26 +103,32 @@
         </div>
         <div id="totalMembers" class="section">
             <h2>Total Members</h2>
+            <ul id="totalMemberList"></ul>
             <p id="totalCount">Total: 0 Members</p>
         </div>
     </div>
     <script>
-        const members = [];
+        const members = []; // Array to store member details
         const memberListElement = document.getElementById('memberList');
         const totalCountElement = document.getElementById('totalCount');
+        const totalMemberListElement = document.getElementById('totalMemberList');
+        const addMessageElement = document.getElementById('addMessage');
 
         function showSection(sectionId) {
             const sections = document.querySelectorAll('.section');
             sections.forEach(section => section.style.display = 'none');
             document.getElementById(sectionId).style.display = 'block';
             updateMemberList();
+            updateTotalCount();
         }
 
         function addMember() {
             const memberName = document.getElementById('memberName').value;
             if (memberName) {
-                members.push(memberName);
+                const joinDate = new Date().toLocaleDateString(); // Get current date
+                members.push({ name: memberName, date: joinDate }); // Add member with name and date
                 document.getElementById('memberName').value = '';
+                addMessageElement.textContent = `Member "${memberName}" added on ${joinDate}.`;
                 updateMemberList();
                 updateTotalCount();
             }
@@ -127,7 +138,7 @@
             const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
             checkboxes.forEach(checkbox => {
                 const index = checkbox.getAttribute('data-index');
-                members.splice(index, 1);
+                members.splice(index, 1); // Remove member from the array
             });
             updateMemberList();
             updateTotalCount();
@@ -135,8 +146,10 @@
 
         function updateMemberList() {
             memberListElement.innerHTML = '';
+            totalMemberListElement.innerHTML = '';
             members.forEach((member, index) => {
-                memberListElement.innerHTML += `<li><input type="checkbox" data-index="${index}"> ${member}</li>`;
+                memberListElement.innerHTML += `<li><input type="checkbox" data-index="${index}"> ${member.name}</li>`;
+                totalMemberListElement.innerHTML += `<li>${member.name} (Joined on: ${member.date})</li>`; // Show name and join date
             });
         }
 
