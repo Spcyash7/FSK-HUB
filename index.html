@@ -8,19 +8,18 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f6f9; /* Light gray background */
-            color: #343a40; /* Dark gray text */
+            background-color: #212529; /* Dark background */
+            color: #f8f9fa; /* Light text */
             margin: 0;
             padding: 0;
         }
         header {
-            background-color: #343a40; /* Dark background for header */
-            padding: 15px;
+            background-color: #343a40; /* Dark header */
+            padding: 10px;
             text-align: center;
-            color: white;
         }
         h1 {
-            font-size: 36px; /* Heading size */
+            font-size: 3.6em; /* Heading size */
             margin: 0;
         }
         .sidebar {
@@ -34,11 +33,12 @@
             color: white;
         }
         .sidebar a {
-            padding: 15px 20px;
+            padding: 15px;
             text-decoration: none;
             color: white;
             display: block;
             transition: background 0.3s;
+            font-size: 1.2em; /* Font size for sidebar */
         }
         .sidebar a:hover {
             background-color: #495057; /* Darker on hover */
@@ -49,20 +49,22 @@
         }
         .section {
             display: none;
-            background-color: white;
+            background-color: #343a40; /* Dark section */
             border-radius: 5px;
             padding: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
             margin-top: 20px;
         }
         button {
             background-color: #007bff; /* Primary button color */
             border: none;
             color: white;
-            padding: 10px 20px;
+            padding: 10px;
             margin-top: 10px;
             cursor: pointer;
             border-radius: 5px;
+            width: 100%; /* Full width button */
+            font-size: 1em; /* Button text size */
         }
         input[type="text"] {
             padding: 10px;
@@ -77,6 +79,12 @@
         .message {
             color: green; /* Success message color */
             margin-top: 10px;
+            display: none; /* Initially hidden */
+            animation: fadeIn 1s; /* Animation for message */
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
@@ -129,6 +137,7 @@
                 members.push({ name: memberName, date: joinDate }); // Add member with name and date
                 document.getElementById('memberName').value = '';
                 addMessageElement.textContent = `Member "${memberName}" added on ${joinDate}.`;
+                addMessageElement.style.display = 'block'; // Show the message
                 updateMemberList();
                 updateTotalCount();
             }
