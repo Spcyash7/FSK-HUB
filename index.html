@@ -3,187 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FSK HUB</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>FSK HUB Admin Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #212529; /* Dark background */
-            color: #f8f9fa; /* Light text */
             margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            background-color: #222;
+            color: #fff;
+            overflow-x: hidden;
         }
         header {
-            background-color: #343a40; /* Dark header */
+            background-color: #1c1c1c;
             padding: 10px;
             text-align: center;
+            position: relative;
         }
         h1 {
-            font-size: 3.6em; /* Heading size */
             margin: 0;
+            font-size: 3.6cm; /* Adjust the size as needed */
+            color: #00aaff;
         }
-        .form-container {
-            background-color: #343a40; /* Dark form background */
+        .menu {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            cursor: pointer;
+        }
+        .dashboard {
+            display: none;
             padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
         }
-        input[type="text"], input[type="password"] {
-            padding: 10px;
-            border: 1px solid #007bff;
-            border-radius: 5px;
-            width: calc(100% - 22px);
-            margin-top: 10px;
+        .dashboard.active {
+            display: block;
         }
-        button {
-            background-color: #007bff; /* Primary button color */
-            border: none;
+        .button {
+            display: block;
+            background-color: #007bff;
             color: white;
             padding: 10px;
-            margin-top: 10px;
-            cursor: pointer;
+            margin: 10px 0;
+            text-align: center;
             border-radius: 5px;
-            width: 100%; /* Full width button */
-            font-size: 1em; /* Button text size */
+            cursor: pointer;
         }
-        .message {
-            color: green; /* Success message color */
-            margin-top: 10px;
-            display: none; /* Initially hidden */
+        .button.red {
+            background-color: red;
         }
-        .hidden {
-            display: none; /* Class to hide elements */
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+        }
+        .members-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .notification {
+            display: none;
+            background-color: #00ff00;
+            color: black;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
     <header>
+        <div class="menu" onclick="toggleMenu()">☰</div>
         <h1>FSK HUB</h1>
     </header>
-
-    <div id="loginContainer" class="form-container">
-        <h2>Login Admin</h2>
-        <input type="text" id="adminId" placeholder="Enter Admin ID">
-        <input type="password" id="adminPassword" placeholder="Enter Password">
-        <button onclick="login()">Login</button>
-        <p id="loginMessage" class="message"></p>
+    <div class="dashboard" id="dashboard">
+        <div class="button" onclick="showSection('addMember')">Add Members ➕</div>
+        <div class="button" onclick="showSection('deleteMember')">Delete Members ➖</div>
+        <div class="button" onclick="showSection('totalMembers')">Total Members 🟢</div>
     </div>
-
-    <div id="dashboardContainer" class="hidden">
-        <div class="sidebar">
-            <a href="#" onclick="showSection('addMember')"><i class="fa fa-user-plus"></i> Add Members</a>
-            <a href="#" onclick="showSection('deleteMember')"><i class="fa fa-user-minus"></i> Delete Members</a>
-            <a href="#" onclick="showSection('totalMembers')"><i class="fa fa-users"></i> Total Members</a>
-            <a href="#" onclick="showSection('createAdmin')"><i class="fa fa-user-cog"></i> Create Admin</a>
-        </div>
-        <div class="content">
-            <div id="addMember" class="section hidden">
-                <h2>Add New Member</h2>
-                <input type="text" id="memberName" placeholder="Enter member name">
-                <button onclick="addMember()">Add Member</button>
-                <p id="addMessage" class="message"></p>
-            </div>
-            <div id="deleteMember" class="section hidden">
-                <h2>Delete Members</h2>
-                <ul id="memberList"></ul>
-                <button onclick="deleteMembers()">Delete Selected</button>
-            </div>
-            <div id="totalMembers" class="section hidden">
-                <h2>Total Members</h2>
-                <ul id="totalMemberList"></ul>
-                <p id="totalCount">Total: 0 Members</p>
-            </div>
-            <div id="createAdmin" class="section hidden">
-                <h2>Create Admin</h2>
-                <input type="text" id="newUser" placeholder="New Username">
-                <input type="password" id="newPassword" placeholder="New Password">
-                <button onclick="generateAdmin()">Generate</button>
-                <p id="generateMessage" class="message"></p>
-            </div>
-        </div>
+    
+    <div id="addMember" class="section">
+        <input type="text" id="memberName" placeholder="Enter Member Name">
+        <div class="button" onclick="addMember()">Add Member</div>
+        <div class="notification" id="addNotification">Member added successfully!</div>
+    </div>
+    
+    <div id="deleteMember" class="section" style="display:none;">
+        <ul id="membersList" class="members-list"></ul>
+        <div class="button red" onclick="deleteMember()">Delete Member</div>
+    </div>
+    
+    <div id="totalMembers" class="section" style="display:none;">
+        <div>Total Members: <span id="memberCount">0</span></div>
+        <ul id="memberDetails" class="members-list"></ul>
     </div>
 
     <script>
-        const members = []; // Array to store member details
-        const adminCredentials = { id: 'FSK_QUADRILL', password: 'Naruto8844' }; // Admin credentials
-        let loggedIn = false; // Flag to check if logged in
-
-        function login() {
-            const adminId = document.getElementById('adminId').value;
-            const adminPassword = document.getElementById('adminPassword').value;
-            if (adminId === adminCredentials.id && adminPassword === adminCredentials.password) {
-                loggedIn = true; // Set logged in to true
-                document.getElementById('loginContainer').classList.add('hidden'); // Hide login container
-                document.getElementById('dashboardContainer').classList.remove('hidden'); // Show dashboard
-                showSection('addMember'); // Show add member section by default
-                document.getElementById('loginMessage').style.display = 'none'; // Hide login message
-            } else {
-                document.getElementById('loginMessage').textContent = 'Invalid Admin ID or Password.';
-                document.getElementById('loginMessage').style.display = 'block'; // Show error message
-            }
+        let members = [];
+        
+        function toggleMenu() {
+            const dashboard = document.getElementById('dashboard');
+            dashboard.classList.toggle('active');
         }
 
-        function showSection(sectionId) {
-            const sections = document.querySelectorAll('.section');
-            sections.forEach(section => section.classList.add('hidden')); // Hide all sections
-            document.getElementById(sectionId).classList.remove('hidden'); // Show selected section
-            updateMemberList(); // Update member list whenever a section is shown
-            updateTotalCount(); // Update total count whenever a section is shown
+        function showSection(section) {
+            const sections = ['addMember', 'deleteMember', 'totalMembers'];
+            sections.forEach(sec => {
+                document.getElementById(sec).style.display = 'none';
+            });
+            document.getElementById(section).style.display = 'block';
+            document.getElementById('dashboard').style.display = 'none';
         }
 
         function addMember() {
-            const memberName = document.getElementById('memberName').value;
-            if (memberName) {
-                const joinDate = new Date().toLocaleDateString(); // Get current date
-                members.push({ name: memberName, date: joinDate }); // Add member with name and date
+            const name = document.getElementById('memberName').value;
+            if (name) {
+                members.push(name);
                 document.getElementById('memberName').value = '';
-                document.getElementById('addMessage').textContent = `Member "${memberName}" added on ${joinDate}.`;
-                document.getElementById('addMessage').style.display = 'block'; // Show the message
-                updateMemberList();
-                updateTotalCount();
+                document.getElementById('addNotification').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('addNotification').style.display = 'none';
+                }, 2000);
+                updateMemberCount();
             }
         }
 
-        function deleteMembers() {
-            const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-            checkboxes.forEach(checkbox => {
-                const index = checkbox.getAttribute('data-index');
-                members.splice(index, 1); // Remove member from the array
-            });
-            updateMemberList();
-            updateTotalCount();
-        }
-
-        function generateAdmin() {
-            const newUser = document.getElementById('newUser').value;
-            const newPassword = document.getElementById('newPassword').value;
-            if (newUser && newPassword) {
-                document.getElementById('generateMessage').textContent = `User "${newUser}" created with password "${newPassword}".`;
-                document.getElementById('generateMessage').style.display = 'block'; // Show success message
-                // You can store this generated user and password in a real application
-            }
-        }
-
-        function updateMemberList() {
-            const memberListElement = document.getElementById('memberList');
-            memberListElement.innerHTML = '';
+        function deleteMember() {
+            const list = document.getElementById('membersList');
+            list.innerHTML = ''; // Clear the list
             members.forEach((member, index) => {
-                memberListElement.innerHTML += `<li><input type="checkbox" data-index="${index}"> ${member.name}</li>`;
+                const listItem = document.createElement('li');
+                listItem.innerText = member;
+                listItem.onclick = () => {
+                    members.splice(index, 1);
+                    deleteMember(); // Refresh the list
+                };
+                list.appendChild(listItem);
             });
         }
 
-        function updateTotalCount() {
-            const totalCountElement = document.getElementById('totalCount');
-            totalCountElement.innerText = `Total: ${members.length} Members`;
+        function updateMemberCount() {
+            document.getElementById('memberCount').innerText = members.length;
+            const memberDetails = document.getElementById('memberDetails');
+            memberDetails.innerHTML = '';
+            members.forEach(member => {
+                const listItem = document.createElement('li');
+                listItem.innerText = member;
+                memberDetails.appendChild(listItem);
+            });
         }
-
-        // Show login page by default
-        document.getElementById('loginContainer').classList.remove('hidden');
     </script>
 </body>
 </html>
