@@ -3,216 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FSK HUB Admin Dashboard</title>
+    <title>FSK Hub - Admin Panel</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            background-color: #222;
+            padding: 0;
+            background-color: #1b1b1b;
             color: #fff;
-            overflow-x: hidden;
         }
         header {
-            background-color: #1c1c1c;
+            background-color: #007bff;
             padding: 10px;
             text-align: center;
-            position: relative;
+            font-size: 3.6cm; /* Adjusted for mobile view */
         }
-        h1 {
-            margin: 0;
-            font-size: 3.6cm; /* Top heading size */
-            color: #00aaff;
-        }
-        .menu {
-            position: absolute;
-            left: 10px;
-            top: 10px;
-            cursor: pointer;
-        }
-        .dashboard {
-            display: none;
+        #sidebar {
+            width: 250px;
+            background: #333;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: -250px;
+            transition: left 0.3s;
             padding: 20px;
         }
-        .dashboard.active {
+        #sidebar a {
             display: block;
+            color: #fff;
+            padding: 10px;
+            text-decoration: none;
         }
-        .button {
-            display: block;
-            background-color: #007bff;
+        #sidebar a:hover {
+            background: #575757;
+        }
+        .content {
+            margin-left: 60px;
+            padding: 20px;
+        }
+        .btn {
+            background: #007bff;
             color: white;
             padding: 10px;
-            margin: 10px 0;
-            text-align: center;
-            border-radius: 5px;
+            border: none;
             cursor: pointer;
         }
-        .button.red {
-            background-color: red;
+        .btn:hover {
+            background: #0056b3;
         }
-        input[type="text"], input[type="password"] {
-            width: calc(100% - 20px);
+        .section {
+            background: #444;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .input-field {
+            margin-bottom: 10px;
+        }
+        .input-field input {
+            width: calc(100% - 22px);
             padding: 10px;
-            margin: 10px 0;
             border-radius: 5px;
             border: none;
         }
-        .members-list {
-            list-style-type: none;
-            padding: 0;
-        }
-        .notification {
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
             display: none;
-            background-color: #00ff00;
-            color: black;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-        }
-        .hidden {
-            display: none;
-        }
-        .login-page {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            height: 100vh;
-            background-color: #1c1c1c;
-        }
-        .login-btn {
-            background-color: #007bff;
+            align-items: center;
             color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div class="login-page" id="loginPage">
-        <h1>Login Admin</h1>
-        <input type="text" id="loginId" placeholder="Enter User ID">
-        <input type="password" id="loginPassword" placeholder="Enter Password">
-        <button class="login-btn" onclick="login()">Login</button>
-        <div class="notification" id="loginNotification"></div>
-    </div>
-
-    <header class="hidden" id="header">
-        <div class="menu" onclick="toggleMenu()">☰</div>
-        <h1>FSK HUB</h1>
+    <header>
+        FSK Hub
+        <i class="fas fa-bars" onclick="toggleSidebar()"></i>
     </header>
-    <div class="dashboard" id="dashboard">
-        <div class="button" onclick="showSection('addMember')">Add Members ➕</div>
-        <div class="button" onclick="showSection('deleteMember')">Delete Members ➖</div>
-        <div class="button" onclick="showSection('totalMembers')">Total Members 🟢</div>
-        <div class="button" onclick="showSection('createAdmin')">Create Admin 🔑</div>
+    <div id="sidebar">
+        <h2>Dashboard</h2>
+        <a href="#" onclick="showSection('addMember')">Add Members ➕</a>
+        <a href="#" onclick="showSection('deleteMember')">Delete Members ➖</a>
+        <a href="#" onclick="showSection('totalMembers')">Total Members 🟢</a>
+        <a href="#" onclick="showSection('createAdmin')">Create Admin</a>
+        <a href="#" onclick="logout()">Logout</a>
     </div>
-
-    <div id="addMember" class="section hidden">
-        <input type="text" id="memberName" placeholder="Enter Member Name">
-        <div class="button" onclick="addMember()">Add Member</div>
-        <div class="notification" id="addNotification">Member added successfully!</div>
+    <div class="content">
+        <div class="section" id="addMember">
+            <h3>Add Member</h3>
+            <div class="input-field">
+                <input type="text" id="memberName" placeholder="Enter Member Name">
+                <button class="btn" onclick="addMember()">Add</button>
+            </div>
+            <div id="addMessage"></div>
+        </div>
+        <div class="section" id="deleteMember" style="display:none;">
+            <h3>Delete Member</h3>
+            <select id="currentMembers" onchange="showDeleteButton()"></select>
+            <button class="btn" id="deleteButton" style="display:none;" onclick="deleteMember()">Delete</button>
+        </div>
+        <div class="section" id="totalMembers" style="display:none;">
+            <h3>Total Members</h3>
+            <div id="membersList"></div>
+        </div>
+        <div class="section" id="createAdmin" style="display:none;">
+            <h3>Create Admin</h3>
+            <div class="input-field">
+                <input type="text" id="newAdminUser" placeholder="Enter New Admin Username">
+                <input type="password" id="newAdminPass" placeholder="Enter New Admin Password">
+                <button class="btn" onclick="generateAdmin()">Generate</button>
+            </div>
+            <div id="generateMessage"></div>
+        </div>
     </div>
-
-    <div id="deleteMember" class="section hidden">
-        <ul id="membersList" class="members-list"></ul>
-        <div class="button red" onclick="deleteMember()">Delete Member</div>
-    </div>
-
-    <div id="totalMembers" class="section hidden">
-        <div>Total Members: <span id="memberCount">0</span></div>
-        <ul id="memberDetails" class="members-list"></ul>
-    </div>
-
-    <div id="createAdmin" class="section hidden">
-        <input type="text" id="newAdminUser" placeholder="New Admin Username">
-        <input type="password" id="newAdminPassword" placeholder="New Admin Password">
-        <div class="button" onclick="generateAdmin()">Generate</div>
-        <div class="notification" id="generateNotification"></div>
-    </div>
+    
+    <div id="overlay"><div>Member added successfully!</div></div>
 
     <script>
-        let members = [];
-        const validId = 'FSK_QUADRILL';
-        const validPassword = 'Naruto8844';
-        
-        function login() {
-            const userId = document.getElementById('loginId').value;
-            const password = document.getElementById('loginPassword').value;
-            if (userId === validId && password === validPassword) {
-                document.getElementById('loginPage').classList.add('hidden');
-                document.getElementById('header').classList.remove('hidden');
-                document.getElementById('dashboard').classList.add('active');
-            } else {
-                document.getElementById('loginNotification').innerText = 'Invalid ID or Password';
-                document.getElementById('loginNotification').style.display = 'block';
-            }
-        }
+        const members = [];
+        const adminUser = 'FSK_QUADRILL';
+        const adminPass = 'Naruto8844';
+        let isLoggedIn = false;
 
-        function toggleMenu() {
-            const dashboard = document.getElementById('dashboard');
-            dashboard.classList.toggle('active');
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.style.left = sidebar.style.left === '0px' ? '-250px' : '0px';
         }
 
         function showSection(section) {
-            const sections = ['addMember', 'deleteMember', 'totalMembers', 'createAdmin'];
-            sections.forEach(sec => {
-                document.getElementById(sec).classList.add('hidden');
-            });
-            document.getElementById(section).classList.remove('hidden');
-            document.getElementById('dashboard').classList.add('active');
+            document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+            document.getElementById(section).style.display = 'block';
+            if (section === 'deleteMember') loadCurrentMembers();
+            if (section === 'totalMembers') loadTotalMembers();
         }
 
         function addMember() {
-            const name = document.getElementById('memberName').value;
-            if (name) {
-                members.push(name);
+            const memberName = document.getElementById('memberName').value;
+            if (memberName) {
+                members.push(memberName);
+                document.getElementById('addMessage').innerText = `${memberName} has been added.`;
                 document.getElementById('memberName').value = '';
-                document.getElementById('addNotification').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('addNotification').style.display = 'none';
-                }, 2000);
-                updateMemberCount();
+                document.getElementById('overlay').style.display = 'flex';
+                setTimeout(() => { document.getElementById('overlay').style.display = 'none'; }, 2000);
             }
+        }
+
+        function loadCurrentMembers() {
+            const select = document.getElementById('currentMembers');
+            select.innerHTML = '';
+            members.forEach((member, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.innerText = member;
+                select.appendChild(option);
+            });
+        }
+
+        function showDeleteButton() {
+            const select = document.getElementById('currentMembers');
+            const deleteButton = document.getElementById('deleteButton');
+            deleteButton.style.display = select.value === '' ? 'none' : 'block';
         }
 
         function deleteMember() {
-            const list = document.getElementById('membersList');
-            list.innerHTML = ''; // Clear the list
-            members.forEach((member, index) => {
-                const listItem = document.createElement('li');
-                listItem.innerText = member;
-                listItem.onclick = () => {
-                    members.splice(index, 1);
-                    deleteMember(); // Refresh the list
-                };
-                list.appendChild(listItem);
-            });
+            const select = document.getElementById('currentMembers');
+            const index = select.value;
+            if (index !== '') {
+                const memberName = members[index];
+                members.splice(index, 1);
+                document.getElementById('addMessage').innerText = `${memberName} has been deleted.`;
+                loadCurrentMembers();
+            }
         }
 
-        function updateMemberCount() {
-            document.getElementById('memberCount').innerText = members.length;
-            const memberDetails = document.getElementById('memberDetails');
-            memberDetails.innerHTML = '';
+        function loadTotalMembers() {
+            const membersList = document.getElementById('membersList');
+            membersList.innerHTML = '';
             members.forEach(member => {
-                const listItem = document.createElement('li');
-                listItem.innerText = member;
-                memberDetails.appendChild(listItem);
+                const div = document.createElement('div');
+                div.innerText = member;
+                membersList.appendChild(div);
             });
+            membersList.innerHTML += `Total Members: ${members.length}`;
         }
 
         function generateAdmin() {
-            const newUser = document.getElementById('newAdminUser').value;
-            const newPassword = document.getElementById('newAdminPassword').value;
-            if (newUser && newPassword) {
-                document.getElementById('generateNotification').innerText = `Generated: User - ${newUser}, Password - ${newPassword}`;
-                document.getElementById('generateNotification').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('generateNotification').style.display = 'none';
-                }, 5000);
+            const user = document.getElementById('newAdminUser').value;
+            const pass = document.getElementById('newAdminPass').value;
+            document.getElementById('generateMessage').innerText = `Generated User: ${user} | Password: ${pass}`;
+            document.getElementById('newAdminUser').value = '';
+            document.getElementById('newAdminPass').value = '';
+        }
+
+        function logout() {
+            isLoggedIn = false;
+            showLogin();
+        }
+
+        function showLogin() {
+            document.body.innerHTML = `
+                <div style="text-align:center; padding: 50px;">
+                    <h2>Admin Login</h2>
+                    <div class="input-field">
+                        <input type="text" id="loginUser" placeholder="Username">
+                        <input type="password" id="loginPass" placeholder="Password">
+                        <button class="btn" onclick="login()">Login</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function login() {
+            const user = document.getElementById('loginUser').value;
+            const pass = document.getElementById('loginPass').value;
+            if (user === adminUser && pass === adminPass) {
+                isLoggedIn = true;
+                document.body.innerHTML = ''; // Clear login form
+                init(); // Call init function to render the admin panel
+            } else {
+                alert('Invalid credentials. Please try again.');
             }
         }
+
+        function init() {
+            const adminPanelHTML = `
+                <header>
+                    FSK Hub
+                    <i class="fas fa-bars" onclick="toggleSidebar()"></i>
+                </header>
+                <div id="sidebar">
+                    <h2>Dashboard</h2>
+                    <a href="#" onclick="showSection('addMember')">Add Members ➕</a>
+                    <a href="#" onclick="showSection('deleteMember')">Delete Members ➖</a>
+                    <a href="#" onclick="showSection('totalMembers')">Total Members 🟢</a>
+                    <a href="#" onclick="showSection('createAdmin')">Create Admin</a>
+                    <a href="#" onclick="logout()">Logout</a>
+                </div>
+                <div class="content">
+                    <div class="section" id="addMember">
+                        <h3>Add Member</h3>
+                        <div class="input-field">
+                            <input type="text" id="memberName" placeholder="Enter Member Name">
+                            <button class="btn" onclick="addMember()">Add</button>
+                        </div>
+                        <div id="addMessage"></div>
+                    </div>
+                    <div class="section" id="deleteMember" style="display:none;">
+                        <h3>Delete Member</h3>
+                        <select id="currentMembers" onchange="showDeleteButton()"></select>
+                        <button class="btn" id="deleteButton" style="display:none;" onclick="deleteMember()">Delete</button>
+                    </div>
+                    <div class="section" id="totalMembers" style="display:none;">
+                        <h3>Total Members</h3>
+                        <div id="membersList"></div>
+                    </div>
+                    <div class="section" id="createAdmin" style="display:none;">
+                        <h3>Create Admin</h3>
+                        <div class="input-field">
+                            <input type="text" id="newAdminUser" placeholder="Enter New Admin Username">
+                            <input type="password" id="newAdminPass" placeholder="Enter New Admin Password">
+                            <button class="btn" onclick="generateAdmin()">Generate</button>
+                        </div>
+                        <div id="generateMessage"></div>
+                    </div>
+                </div>
+            `;
+            document.body.innerHTML = adminPanelHTML;
+        }
+
+        showLogin(); // Show login on load
     </script>
 </body>
 </html>
