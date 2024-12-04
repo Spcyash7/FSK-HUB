@@ -79,6 +79,9 @@
             align-items: center;
             color: white;
         }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -95,31 +98,42 @@
         <a href="#" onclick="logout()">Logout</a>
     </div>
     <div class="content">
-        <div class="section" id="addMember">
-            <h3>Add Member</h3>
-            <div class="input-field">
-                <input type="text" id="memberName" placeholder="Enter Member Name">
-                <button class="btn" onclick="addMember()">Add</button>
+        <div id="adminPanel" class="hidden">
+            <div class="section" id="addMember">
+                <h3>Add Member</h3>
+                <div class="input-field">
+                    <input type="text" id="memberName" placeholder="Enter Member Name">
+                    <button class="btn" onclick="addMember()">Add</button>
+                </div>
+                <div id="addMessage"></div>
             </div>
-            <div id="addMessage"></div>
-        </div>
-        <div class="section" id="deleteMember" style="display:none;">
-            <h3>Delete Member</h3>
-            <select id="currentMembers" onchange="showDeleteButton()"></select>
-            <button class="btn" id="deleteButton" style="display:none;" onclick="deleteMember()">Delete</button>
-        </div>
-        <div class="section" id="totalMembers" style="display:none;">
-            <h3>Total Members</h3>
-            <div id="membersList"></div>
-        </div>
-        <div class="section" id="createAdmin" style="display:none;">
-            <h3>Create Admin</h3>
-            <div class="input-field">
-                <input type="text" id="newAdminUser" placeholder="Enter New Admin Username">
-                <input type="password" id="newAdminPass" placeholder="Enter New Admin Password">
-                <button class="btn" onclick="generateAdmin()">Generate</button>
+            <div class="section" id="deleteMember" style="display:none;">
+                <h3>Delete Member</h3>
+                <select id="currentMembers" onchange="showDeleteButton()"></select>
+                <button class="btn" id="deleteButton" style="display:none;" onclick="deleteMember()">Delete</button>
             </div>
-            <div id="generateMessage"></div>
+            <div class="section" id="totalMembers" style="display:none;">
+                <h3>Total Members</h3>
+                <div id="membersList"></div>
+            </div>
+            <div class="section" id="createAdmin" style="display:none;">
+                <h3>Create Admin</h3>
+                <div class="input-field">
+                    <input type="text" id="newAdminUser" placeholder="Enter New Admin Username">
+                    <input type="password" id="newAdminPass" placeholder="Enter New Admin Password">
+                    <button class="btn" onclick="generateAdmin()">Generate</button>
+                </div>
+                <div id="generateMessage"></div>
+            </div>
+        </div>
+
+        <div id="loginPanel">
+            <h2>Admin Login</h2>
+            <div class="input-field">
+                <input type="text" id="loginUser" placeholder="Username">
+                <input type="password" id="loginPass" placeholder="Password">
+                <button class="btn" onclick="login()">Login</button>
+            </div>
         </div>
     </div>
     
@@ -129,7 +143,6 @@
         const members = [];
         const adminUser = 'FSK_QUADRILL';
         const adminPass = 'Naruto8844';
-        let isLoggedIn = false;
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -201,83 +214,16 @@
             document.getElementById('newAdminPass').value = '';
         }
 
-        function logout() {
-            isLoggedIn = false;
-            showLogin();
-        }
-
-        function showLogin() {
-            document.body.innerHTML = `
-                <div style="text-align:center; padding: 50px;">
-                    <h2>Admin Login</h2>
-                    <div class="input-field">
-                        <input type="text" id="loginUser" placeholder="Username">
-                        <input type="password" id="loginPass" placeholder="Password">
-                        <button class="btn" onclick="login()">Login</button>
-                    </div>
-                </div>
-            `;
-        }
-
         function login() {
             const user = document.getElementById('loginUser').value;
             const pass = document.getElementById('loginPass').value;
             if (user === adminUser && pass === adminPass) {
-                isLoggedIn = true;
-                document.body.innerHTML = ''; // Clear login form
-                init(); // Call init function to render the admin panel
+                document.getElementById('loginPanel').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
             } else {
                 alert('Invalid credentials. Please try again.');
             }
         }
-
-        function init() {
-            const adminPanelHTML = `
-                <header>
-                    FSK Hub
-                    <i class="fas fa-bars" onclick="toggleSidebar()"></i>
-                </header>
-                <div id="sidebar">
-                    <h2>Dashboard</h2>
-                    <a href="#" onclick="showSection('addMember')">Add Members ➕</a>
-                    <a href="#" onclick="showSection('deleteMember')">Delete Members ➖</a>
-                    <a href="#" onclick="showSection('totalMembers')">Total Members 🟢</a>
-                    <a href="#" onclick="showSection('createAdmin')">Create Admin</a>
-                    <a href="#" onclick="logout()">Logout</a>
-                </div>
-                <div class="content">
-                    <div class="section" id="addMember">
-                        <h3>Add Member</h3>
-                        <div class="input-field">
-                            <input type="text" id="memberName" placeholder="Enter Member Name">
-                            <button class="btn" onclick="addMember()">Add</button>
-                        </div>
-                        <div id="addMessage"></div>
-                    </div>
-                    <div class="section" id="deleteMember" style="display:none;">
-                        <h3>Delete Member</h3>
-                        <select id="currentMembers" onchange="showDeleteButton()"></select>
-                        <button class="btn" id="deleteButton" style="display:none;" onclick="deleteMember()">Delete</button>
-                    </div>
-                    <div class="section" id="totalMembers" style="display:none;">
-                        <h3>Total Members</h3>
-                        <div id="membersList"></div>
-                    </div>
-                    <div class="section" id="createAdmin" style="display:none;">
-                        <h3>Create Admin</h3>
-                        <div class="input-field">
-                            <input type="text" id="newAdminUser" placeholder="Enter New Admin Username">
-                            <input type="password" id="newAdminPass" placeholder="Enter New Admin Password">
-                            <button class="btn" onclick="generateAdmin()">Generate</button>
-                        </div>
-                        <div id="generateMessage"></div>
-                    </div>
-                </div>
-            `;
-            document.body.innerHTML = adminPanelHTML;
-        }
-
-        showLogin(); // Show login on load
     </script>
 </body>
 </html>
