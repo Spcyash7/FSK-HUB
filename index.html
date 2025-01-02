@@ -94,8 +94,20 @@
             border-radius: 5px;
             border: none;
         }
-        .admin-history {
-            margin-top: 20px;
+        .hidden {
+            display: none;
+        }
+        .validity-select {
+            margin-top: 10px;
+            padding: 5px;
+            width: 100%;
+        }
+        .emoji {
+            font-size: 1.2em;
+        }
+        .bold-italic {
+            font-weight: bold;
+            font-style: italic;
         }
     </style>
 </head>
@@ -117,7 +129,7 @@
             <a href="#" onclick="showSection('addMember')">Add Member</a>
             <a href="#" onclick="showSection('deleteMember')">Delete Member</a>
             <a href="#" onclick="showSection('totalMembers')">Total Members</a>
-            <a href="#" onclick="showSection('createAdmin')" id="createAdminLink" style="display:none;">Create Admin</a>
+            <a href="#" onclick="showSection('createAdmin')">Create Admin</a>
         </div>
         <div class="main-content">
             <div id="addMember" class="section">
@@ -129,7 +141,7 @@
                 <h3>Delete Member</h3>
                 <select id="currentMembers"></select>
                 <button onclick="deleteMember()">Delete</button>
-                <button onclick="editMemberDate()" id="editDateButton" style="display:none;">Edit Date</button>
+                <button onclick="editDate()">Edit Date</button>
             </div>
             <div id="totalMembers" class="section" style="display:none;">
                 <h3>Total Members</h3>
@@ -139,8 +151,16 @@
                 <h3>Create Admin</h3>
                 <input type="text" id="newAdminUser" placeholder="Enter New Admin Username">
                 <input type="password" id="newAdminPass" placeholder="Enter New Admin Password">
-                <button onclick="generateAdmin()">Generate</button>
-                <div class="admin-history" id="adminHistory"></div>
+                <select id="validity" class="validity-select">
+                    <option value="1">Valid for 1 Day</option>
+                    <option value="3">Valid for 3 Days</option>
+                    <option value="7">Valid for 1 Week</option>
+                    <option value="30">Valid for 1 Month</option>
+                </select>
+                <button onclick="generateAdmin()">Generate Admin</button>
+                <button onclick="deleteAdmin()" class="hidden" id="deleteAdminBtn">Delete Admin</button>
+                <h4 class="bold-italic emoji">📝 Admin History</h4>
+                <div id="adminHistory" class="hidden"></div>
             </div>
         </div>
     </div>
@@ -151,37 +171,26 @@
         const members = JSON.parse(localStorage.getItem('members')) || [];
         const adminHistory = JSON.parse(localStorage.getItem('adminHistory')) || [];
 
-        let currentUser = ''; // Store the current user
-
         function login() {
             const username = document.getElementById('loginUser').value;
             const password = document.getElementById('loginPass').value;
-            
-            // Check for main admin credentials
             if (username === adminUser && password === adminPass) {
-                currentUser = adminUser; // Set current user
-                setupDashboardForAdmin();
-            } else {
-                // Check if the provided credentials match any created admin
-                const foundAdmin = adminHistory.find(admin => admin.username === username && admin.password === password);
-                if (foundAdmin) {
-                    currentUser = username; // Set current user
-                    setupDashboardForAdmin();
-                } else {
-                    alert('Invalid Username or Password');
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('dashboardPage').style.display = 'block';
+                loadCurrentMembers();
+                loadAdminHistory();
+                return;
+            }
+            for (const admin of adminHistory) {
+                if (admin.username === username && admin.password === password) {
+                    document.getElementById('loginPage').style.display = 'none';
+                    document.getElementById('dashboardPage').style.display = 'block';
+                    loadCurrentMembers();
+                    loadAdminHistory();
+                    return;
                 }
             }
-        }
-
-        function setupDashboardForAdmin() {
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('dashboardPage').style.display = 'block';
-
-            // Show/hide elements based on the current user
-            if (currentUser === adminUser) {
-                document.getElementById('createAdminLink').style.display = 'block'; // Show Create Admin link
-                document.getElementById('editDateButton').style.display = 'block'; // Show Edit Date button
-            }
+            alert('Invalid Username or Password');
         }
 
         function addMember() {
@@ -205,6 +214,20 @@
             }
         }
 
+        function editDate() {
+            const select = document.getElementById('currentMembers');
+            const index = select.value;
+            if (index !== '') {
+                const newDate = prompt('Enter the new joining date (MM/DD/YYYY):');
+                if (newDate) {
+                    members[index].date = newDate;
+                    localStorage.setItem('members', JSON.stringify(members));
+                    alert('Date updated successfully!');
+                    loadCurrentMembers();
+                }
+            }
+        }
+
         function loadCurrentMembers() {
             const select = document.getElementById('currentMembers');
             select.innerHTML = '';
@@ -221,56 +244,54 @@
             document.getElementById(section).style.display = 'block';
             if (section === 'deleteMember') loadCurrentMembers();
             if (section === 'totalMembers') loadTotalMembers();
-            if (section === 'createAdmin') loadAdminHistory();
-        }
-
-        function loadTotalMembers() {
-            const list = document.getElementById('membersList');
-            list.innerHTML = '';
-            members.forEach(member => {
-                const div = document.createElement('div');
-                div.innerText = `${member.name} (Joined: ${member.date})`;
-                list.appendChild(div);
-            });
-        }
-
-        function generateAdmin() {
-            const username = document.getElementById('newAdminUser').value;
-            const password = document.getElementById('newAdminPass').value;
-            if (username && password) {
-                adminHistory.push({ username, password, time: new Date().toLocaleString() });
-                localStorage.setItem('adminHistory', JSON.stringify(adminHistory));
-                alert('New admin created successfully!');
-                document.getElementById('newAdminUser').value = '';
-                document.getElementById('newAdminPass').value = '';
+            if (section === 'createAdmin') {
+                const isMainAdmin = adminUser === 'FSK_QUADRILL';
+                document.getElementById('deleteAdminBtn').style.display = isMainAdmin ? 'block' : 'none';
                 loadAdminHistory();
             }
         }
 
-        function loadAdminHistory() {
-            const historyDiv = document.getElementById('adminHistory');
-            historyDiv.innerHTML = '<h4>Admin History</h4>';
-            adminHistory.forEach(admin => {
-                const div = document.createElement('div');
-                div.innerText = `${admin.username} (Created at: ${admin.time})`;
-                historyDiv.appendChild(div);
+        function loadTotalMembers() {
+            const membersList = document.getElementById('membersList');
+            membersList.innerHTML = '';
+            members.forEach(member => {
+                membersList.innerHTML += `<div>${member.name} - Joined on: ${member.date}</div>`;
             });
         }
 
-        function editMemberDate() {
-            const select = document.getElementById('currentMembers');
-            const index = select.value;
-            const newDate = prompt('Enter new join date (MM/DD/YYYY):');
-            if (newDate) {
-                members[index].date = newDate;
-                localStorage.setItem('members', JSON.stringify(members));
-                alert('Join date updated successfully!');
-                loadCurrentMembers();
+        function generateAdmin() {
+            const newAdminUser = document.getElementById('newAdminUser').value;
+            const newAdminPass = document.getElementById('newAdminPass').value;
+            const validity = document.getElementById('validity').value;
+
+            if (newAdminUser && newAdminPass) {
+                adminHistory.push({ username: newAdminUser, password: newAdminPass, validity });
+                localStorage.setItem('adminHistory', JSON.stringify(adminHistory));
+                alert(`Admin ${newAdminUser} created successfully!`);
+                document.getElementById('newAdminUser').value = '';
+                document.getElementById('newAdminPass').value = '';
             }
         }
 
-        // Initialize
-        loadCurrentMembers();
+        function deleteAdmin() {
+            const adminUserToDelete = prompt("Enter the username of the admin to delete:");
+            const index = adminHistory.findIndex(admin => admin.username === adminUserToDelete);
+            if (index !== -1) {
+                adminHistory.splice(index, 1);
+                localStorage.setItem('adminHistory', JSON.stringify(adminHistory));
+                alert(`Admin ${adminUserToDelete} deleted successfully!`);
+            } else {
+                alert(`Admin ${adminUserToDelete} not found.`);
+            }
+        }
+
+        function loadAdminHistory() {
+            const adminHistoryDiv = document.getElementById('adminHistory');
+            adminHistoryDiv.innerHTML = '';
+            adminHistory.forEach(admin => {
+                adminHistoryDiv.innerHTML += `<div>${admin.username} - Valid for: ${admin.validity} days</div>`;
+            });
+        }
     </script>
 </body>
 </html>
