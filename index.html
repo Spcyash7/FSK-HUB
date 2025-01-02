@@ -117,7 +117,7 @@
             <a href="#" onclick="showSection('addMember')">Add Member</a>
             <a href="#" onclick="showSection('deleteMember')">Delete Member</a>
             <a href="#" onclick="showSection('totalMembers')">Total Members</a>
-            <a href="#" onclick="showSection('createAdmin')">Create Admin</a>
+            <a href="#" onclick="showSection('createAdmin')" id="createAdminLink" style="display:none;">Create Admin</a>
         </div>
         <div class="main-content">
             <div id="addMember" class="section">
@@ -129,7 +129,7 @@
                 <h3>Delete Member</h3>
                 <select id="currentMembers"></select>
                 <button onclick="deleteMember()">Delete</button>
-                <button onclick="editMemberDate()">Edit Date</button>
+                <button onclick="editMemberDate()" id="editDateButton" style="display:none;">Edit Date</button>
             </div>
             <div id="totalMembers" class="section" style="display:none;">
                 <h3>Total Members</h3>
@@ -151,23 +151,36 @@
         const members = JSON.parse(localStorage.getItem('members')) || [];
         const adminHistory = JSON.parse(localStorage.getItem('adminHistory')) || [];
 
+        let currentUser = ''; // Store the current user
+
         function login() {
             const username = document.getElementById('loginUser').value;
             const password = document.getElementById('loginPass').value;
             
             // Check for main admin credentials
             if (username === adminUser && password === adminPass) {
-                document.getElementById('loginPage').style.display = 'none';
-                document.getElementById('dashboardPage').style.display = 'block';
+                currentUser = adminUser; // Set current user
+                setupDashboardForAdmin();
             } else {
                 // Check if the provided credentials match any created admin
                 const foundAdmin = adminHistory.find(admin => admin.username === username && admin.password === password);
                 if (foundAdmin) {
-                    document.getElementById('loginPage').style.display = 'none';
-                    document.getElementById('dashboardPage').style.display = 'block';
+                    currentUser = username; // Set current user
+                    setupDashboardForAdmin();
                 } else {
                     alert('Invalid Username or Password');
                 }
+            }
+        }
+
+        function setupDashboardForAdmin() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('dashboardPage').style.display = 'block';
+
+            // Show/hide elements based on the current user
+            if (currentUser === adminUser) {
+                document.getElementById('createAdminLink').style.display = 'block'; // Show Create Admin link
+                document.getElementById('editDateButton').style.display = 'block'; // Show Edit Date button
             }
         }
 
@@ -227,23 +240,21 @@
             if (username && password) {
                 adminHistory.push({ username, password, time: new Date().toLocaleString() });
                 localStorage.setItem('adminHistory', JSON.stringify(adminHistory));
-                alert(`Admin ${username} created successfully!`);
+                alert('New admin created successfully!');
                 document.getElementById('newAdminUser').value = '';
                 document.getElementById('newAdminPass').value = '';
-            } else {
-                alert('Please enter both username and password.');
+                loadAdminHistory();
             }
         }
 
         function loadAdminHistory() {
             const historyDiv = document.getElementById('adminHistory');
-            historyDiv.innerHTML = '<h4>Admin History:</h4>';
-            adminHistory.forEach(entry => {
+            historyDiv.innerHTML = '<h4>Admin History</h4>';
+            adminHistory.forEach(admin => {
                 const div = document.createElement('div');
-                div.innerText = `Username: ${entry.username}, Password: ${entry.password}, Created at: ${entry.time}`;
+                div.innerText = `${admin.username} (Created at: ${admin.time})`;
                 historyDiv.appendChild(div);
             });
-            historyDiv.style.display = 'block';
         }
 
         function editMemberDate() {
