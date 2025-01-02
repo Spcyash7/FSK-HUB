@@ -154,11 +154,20 @@
         function login() {
             const username = document.getElementById('loginUser').value;
             const password = document.getElementById('loginPass').value;
+            
+            // Check for main admin credentials
             if (username === adminUser && password === adminPass) {
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('dashboardPage').style.display = 'block';
             } else {
-                alert('Invalid Username or Password');
+                // Check if the provided credentials match any created admin
+                const foundAdmin = adminHistory.find(admin => admin.username === username && admin.password === password);
+                if (foundAdmin) {
+                    document.getElementById('loginPage').style.display = 'none';
+                    document.getElementById('dashboardPage').style.display = 'block';
+                } else {
+                    alert('Invalid Username or Password');
+                }
             }
         }
 
@@ -240,14 +249,12 @@
         function editMemberDate() {
             const select = document.getElementById('currentMembers');
             const index = select.value;
-            if (index !== '') {
-                const newDate = prompt('Enter new join date (MM/DD/YYYY):');
-                if (newDate) {
-                    members[index].date = newDate;
-                    localStorage.setItem('members', JSON.stringify(members));
-                    alert('Date updated successfully!');
-                    loadCurrentMembers();
-                }
+            const newDate = prompt('Enter new join date (MM/DD/YYYY):');
+            if (newDate) {
+                members[index].date = newDate;
+                localStorage.setItem('members', JSON.stringify(members));
+                alert('Join date updated successfully!');
+                loadCurrentMembers();
             }
         }
 
