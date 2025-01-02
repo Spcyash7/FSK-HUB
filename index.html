@@ -53,11 +53,10 @@
         }
         header {
             background-color: #007bff;
-            padding: 10px;
+            padding: 15px;
             text-align: center;
-            font-size: 20px;
+            font-size: 24px;
             font-weight: bold;
-            border-radius: 5px;
         }
         .sidebar {
             position: fixed;
@@ -95,20 +94,8 @@
             border-radius: 5px;
             border: none;
         }
-
-        /* Responsive styles */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                position: relative;
-            }
-            .main-content {
-                margin-left: 0;
-                padding: 10px;
-            }
-            header {
-                font-size: 18px;
-            }
+        .admin-history {
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -130,8 +117,7 @@
             <a href="#" onclick="showSection('addMember')">Add Member</a>
             <a href="#" onclick="showSection('deleteMember')">Delete Member</a>
             <a href="#" onclick="showSection('totalMembers')">Total Members</a>
-            <a href="#" id="createAdminLink" style="display:none;" onclick="showSection('createAdmin')">Create Admin</a>
-            <a href="#" id="adminHistoryLink" style="display:none;" onclick="showSection('adminHistory')">Show Admin History</a>
+            <a href="#" onclick="showSection('createAdmin')">Create Admin</a>
         </div>
         <div class="main-content">
             <div id="addMember" class="section">
@@ -154,8 +140,7 @@
                 <input type="text" id="newAdminUser" placeholder="Enter New Admin Username">
                 <input type="password" id="newAdminPass" placeholder="Enter New Admin Password">
                 <button onclick="generateAdmin()">Generate</button>
-                <button onclick="showAdminHistory()">Show Admin History</button>
-                <div id="adminHistory" style="display:none;"></div>
+                <div class="admin-history" id="adminHistory"></div>
             </div>
         </div>
     </div>
@@ -172,8 +157,6 @@
             if (username === adminUser && password === adminPass) {
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('dashboardPage').style.display = 'block';
-                document.getElementById('createAdminLink').style.display = 'block';
-                document.getElementById('adminHistoryLink').style.display = 'block';
             } else {
                 alert('Invalid Username or Password');
             }
@@ -200,18 +183,6 @@
             }
         }
 
-        function editMemberDate() {
-            const select = document.getElementById('currentMembers');
-            const index = select.value;
-            const newDate = prompt("Enter new date (MM/DD/YYYY):", members[index].date);
-            if (newDate) {
-                members[index].date = newDate;
-                localStorage.setItem('members', JSON.stringify(members));
-                alert('Member date updated successfully!');
-                loadCurrentMembers();
-            }
-        }
-
         function loadCurrentMembers() {
             const select = document.getElementById('currentMembers');
             select.innerHTML = '';
@@ -228,6 +199,7 @@
             document.getElementById(section).style.display = 'block';
             if (section === 'deleteMember') loadCurrentMembers();
             if (section === 'totalMembers') loadTotalMembers();
+            if (section === 'createAdmin') loadAdminHistory();
         }
 
         function loadTotalMembers() {
@@ -249,10 +221,12 @@
                 alert(`Admin ${username} created successfully!`);
                 document.getElementById('newAdminUser').value = '';
                 document.getElementById('newAdminPass').value = '';
+            } else {
+                alert('Please enter both username and password.');
             }
         }
 
-        function showAdminHistory() {
+        function loadAdminHistory() {
             const historyDiv = document.getElementById('adminHistory');
             historyDiv.innerHTML = '<h4>Admin History:</h4>';
             adminHistory.forEach(entry => {
@@ -262,6 +236,23 @@
             });
             historyDiv.style.display = 'block';
         }
+
+        function editMemberDate() {
+            const select = document.getElementById('currentMembers');
+            const index = select.value;
+            if (index !== '') {
+                const newDate = prompt('Enter new join date (MM/DD/YYYY):');
+                if (newDate) {
+                    members[index].date = newDate;
+                    localStorage.setItem('members', JSON.stringify(members));
+                    alert('Date updated successfully!');
+                    loadCurrentMembers();
+                }
+            }
+        }
+
+        // Initialize
+        loadCurrentMembers();
     </script>
 </body>
 </html>
