@@ -1,25 +1,99 @@
-// This script will generate fake followers for the given username
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPC_YASH</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-color: #121212;
+            color: #fff;
+        }
+        .header {
+            padding: 20px;
+            background-color: #1e1e1e;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .tagline {
+            font-size: 1.2em;
+            color: #aaaaaa;
+            margin-top: 5px;
+        }
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007BFF;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .menu {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .menu-button {
+            font-size: 24px;
+            cursor: pointer;
+            color: #fff;
+        }
+        .dropdown {
+            display: none;
+            position: absolute;
+            right: 10px;
+            background-color: #1e1e1e;
+            padding: 10px;
+            border: 1px solid #444;
+            border-radius: 5px;
+        }
+        .dropdown a {
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            margin: 5px 0;
+        }
+        .dropdown a:hover {
+            color: #007BFF;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>SPC_YASH</h1>
+        <p class="tagline">Scripter/Gamer/Editor/Free Lancer/Trader</p>
+    </div>
+    <a href="https://instagram.com/spc_editzs7" class="button">Follow</a>
+    <a href="https://t.me/spc_owners" class="button">Contact</a>
+    <div class="menu">
+        <span class="menu-button" onclick="toggleMenu()">☰</span>
+        <div class="dropdown" id="menuDropdown">
+            <a href="https://youtube.com/@spc_quadrill">YouTube</a>
+            <a href="https://instagram.com/spc_editzs7">Instagram</a>
+            <a href="https://t.me/spc_owners">Telegram</a>
+        </div>
+    </div>
+    <a href="mailto:fskquadrillinaire@gmail.com" class="button">Mail</a>
 
-// Function to generate fake followers
-function generateFakeFollowers(username, count) {
-  for (let i = 0; i < count; i++) {
-    const fakeUsername = generateRandomUsername();
-    console.log(`User ${fakeUsername} is now following ${username}`);
-  }
-}
-
-// Function to generate a random username
-function generateRandomUsername() {
-  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  const length = 10;
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  return result;
-}
-
-// Usage example
-const username = 'your_instagram_username';
-const followerCount = 10000;
-generateFakeFollowers(username, followerCount);
+    <script>
+        function toggleMenu() {
+            const dropdown = document.getElementById("menuDropdown");
+            if (dropdown.style.display === "block") {
+                dropdown.style.display = "none";
+            } else {
+                dropdown.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
